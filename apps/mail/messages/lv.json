@@ -466,8 +466,8 @@
         "customPromptPlaceholder": "Ievadi savu pielāgoto norādījumu AI...",
         "customPromptDescription": "Pielāgot, kā AI raksta jūsu e-pasta atbildes. Jūsu norādījumi tiks pievienoti AI noklusējuma instrukcijām.",
         "noResultsFound": "Netika atrasts neviens rezultāts",
-        "zeroSignature": "Zero paraksts",
-        "zeroSignatureDescription": "Pievienot Zero parakstu saviem e-pastiem.",
+        "zeroSignature": "Skippy paraksts",
+        "zeroSignatureDescription": "Pievienot Skippy parakstu saviem e-pastiem.",
         "undoSendEnabled": "Atsaukt nosūtīšanu",
         "undoSendEnabledDescription": "Ļaut atcelt e-pastus 30 sekunžu laikā pēc nosūtīšanas.",
         "defaultEmailAlias": "Noklusējuma e-pasta aizstājvārds",
@@ -480,7 +480,7 @@
       },
       "connections": {
         "title": "E-pasta savienojumi",
-        "description": "Savieno savus e-pasta kontus ar Zero.",
+        "description": "Savieno savus e-pasta kontus ar Skippy.",
         "disconnectTitle": "Atvienot e-pasta kontu",
         "disconnectDescription": "Vai tiešām vēlies atvienot šo e-pastu?",
         "cancel": "Atcelt",
@@ -668,6 +668,6 @@
   "errorMessages": {
     "required_scopes_missing": "Mums trūkst nepieciešamo atļauju, lai nodrošinātu pilnvērtīgu pieredzi. Lūdzu, piesakieties vēlreiz un atļaujiet pieprasīto piekļuvi.",
     "early_access_required": "Lai pieteiktos, nepieciešama agrīnā piekļuve",
-    "unauthorized": "Zero nevarēja ielādēt jūsu datus no trešās puses pakalpojuma sniedzēja. Lūdzu, mēģiniet vēlreiz."
+    "unauthorized": "Skippy nevarēja ielādēt jūsu datus no trešās puses pakalpojuma sniedzēja. Lūdzu, mēģiniet vēlreiz."
   }
 }

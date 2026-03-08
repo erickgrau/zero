@@ -1,10 +1,10 @@
 # Scripts
 
-This folder contains utility scripts for the Zero email application. These scripts are designed to help with development, testing, and maintenance tasks that are not part of the main application flow.
+This folder contains utility scripts for the Skippy email application. These scripts are designed to help with development, testing, and maintenance tasks that are not part of the main application flow.
 
 ## Overview
 
-The scripts system in Zero is built using [cmd-ts](https://github.com/Schniz/cmd-ts), a TypeScript library for building type-safe command-line applications. This provides a structured way to create, organize, and run utility scripts with proper command-line argument handling, help text, and more.
+The scripts system in Skippy is built using [cmd-ts](https://github.com/Schniz/cmd-ts), a TypeScript library for building type-safe command-line applications. This provides a structured way to create, organize, and run utility scripts with proper command-line argument handling, help text, and more.
 
 ## How to Run Scripts
 
@@ -94,8 +94,8 @@ export const myScriptCommand = command({
 Update `apps/mail/scripts/run.ts` to include your new command:
 
 ```typescript
-import { seedStyleCommand } from '@zero/mail/scripts/seed-style/seeder';
-import { myScriptCommand } from '@zero/mail/scripts/my-script';
+import { seedStyleCommand } from '@skippy/mail/scripts/seed-style/seeder';
+import { myScriptCommand } from '@skippy/mail/scripts/my-script';
 import { subcommands, run } from 'cmd-ts';
 
 const app = subcommands({

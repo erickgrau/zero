@@ -466,8 +466,8 @@
         "customPromptPlaceholder": "AI를 위한 맞춤 프롬프트를 입력하세요...",
         "customPromptDescription": "AI가 이메일 답장을 작성하는 방식을 맞춤설정하세요. 이것은 기본 프롬프트에 추가됩니다.",
         "noResultsFound": "검색 결과 없음",
-        "zeroSignature": "Zero 서명",
-        "zeroSignatureDescription": "이메일에 Zero 서명을 추가합니다.",
+        "zeroSignature": "Skippy 서명",
+        "zeroSignatureDescription": "이메일에 Skippy 서명을 추가합니다.",
         "undoSendEnabled": "전송 취소",
         "undoSendEnabledDescription": "이메일 전송 후 30초 이내에 취소할 수 있습니다.",
         "defaultEmailAlias": "기본 이메일 별칭",
@@ -480,7 +480,7 @@
       },
       "connections": {
         "title": "이메일 연결",
-        "description": "이메일 계정을 Zero에 연결합니다.",
+        "description": "이메일 계정을 Skippy에 연결합니다.",
         "disconnectTitle": "이메일 계정 연결 해제",
         "disconnectDescription": "이 이메일의 연결을 해제하시겠습니까?",
         "cancel": "취소",
@@ -668,6 +668,6 @@
   "errorMessages": {
     "required_scopes_missing": "완전한 경험을 제공하는 데 필요한 권한이 부족합니다. 다시 로그인하여 요청된 접근 권한을 허용해 주세요.",
     "early_access_required": "로그인하려면 얼리 액세스가 필요합니다",
-    "unauthorized": "Zero가 제3자 제공업체에서 데이터를 불러올 수 없습니다. 다시 시도해 주세요."
+    "unauthorized": "Skippy가 제3자 제공업체에서 데이터를 불러올 수 없습니다. 다시 시도해 주세요."
   }
 }

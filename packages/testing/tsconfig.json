@@ -19,8 +19,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["../../apps/mail/*"],
-      "@zero/server/*": ["../../apps/server/src/*"],
-      "@zero/mail/*": ["../../apps/mail/*"]
+      "@skippy/server/*": ["../../apps/server/src/*"],
+      "@skippy/mail/*": ["../../apps/mail/*"]
     }
   },
   "include": [

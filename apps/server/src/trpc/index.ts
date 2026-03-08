@@ -19,6 +19,8 @@ import { aiRouter } from './routes/ai';
 import { router } from './trpc';
 import { loggingRouter } from './routes/logging';
 
+import { credentialsRouter } from './routes/credentials';
+
 export const appRouter = router({
   ai: aiRouter,
   bimi: bimiRouter,
@@ -26,6 +28,7 @@ export const appRouter = router({
   categories: categoriesRouter,
   connections: connectionsRouter,
   cookiePreferences: cookiePreferencesRouter,
+  credentials: credentialsRouter,
   drafts: draftsRouter,
   labels: labelsRouter,
   mail: mailRouter,

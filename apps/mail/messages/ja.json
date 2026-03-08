@@ -466,8 +466,8 @@
         "customPromptPlaceholder": "AIのカスタムプロンプトを入力...",
         "customPromptDescription": "AIがメールの返信を書く方法をカスタマイズします。これはベースプロンプトに追加されます。",
         "noResultsFound": "結果が見つかりませんでした",
-        "zeroSignature": "Zero署名",
-        "zeroSignatureDescription": "メールにZero署名を追加します。",
+        "zeroSignature": "Skippy署名",
+        "zeroSignatureDescription": "メールにSkippy署名を追加します。",
         "undoSendEnabled": "送信取り消し",
         "undoSendEnabledDescription": "メール送信後30秒以内の取り消しを許可します。",
         "defaultEmailAlias": "デフォルトのメールエイリアス",
@@ -480,7 +480,7 @@
       },
       "connections": {
         "title": "メールの接続",
-        "description": "メールアカウントをZeroに接続します。",
+        "description": "メールアカウントをSkippyに接続します。",
         "disconnectTitle": "メールアカウントを切断する",
         "disconnectDescription": "このメールアドレスを切断してもよろしいですか？",
         "cancel": "キャンセル",
@@ -668,6 +668,6 @@
   "errorMessages": {
     "required_scopes_missing": "完全な体験を提供するために必要な権限が不足しています。もう一度サインインして、リクエストされたアクセスを許可してください。",
     "early_access_required": "ログインするにはアーリーアクセスが必要です",
-    "unauthorized": "Zeroは第三者プロバイダーからデータを読み込めませんでした。もう一度お試しください。"
+    "unauthorized": "Skippyは第三者プロバイダーからデータを読み込めませんでした。もう一度お試しください。"
   }
 }

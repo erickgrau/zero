@@ -22,7 +22,7 @@ import { toast } from 'sonner';
 const resources = [
   {
     title: 'GitHub',
-    href: 'https://github.com/Mail-0/Zero',
+    href: 'https://github.com/Mail-0/Skippy',
     description: 'Check out our open-source projects and contributions.',
     platform: 'github' as const,
   },
@@ -50,7 +50,7 @@ const aboutLinks = [
   {
     title: 'About',
     href: '/about',
-    description: 'Learn more about Zero and our mission.',
+    description: 'Learn more about Skippy and our mission.',
   },
   {
     title: 'Privacy',
@@ -65,7 +65,7 @@ const aboutLinks = [
   {
     title: 'Contributors',
     href: '/contributors',
-    description: 'See the contributors to Zero.',
+    description: 'See the contributors to Skippy.',
   },
 ];
 
@@ -89,7 +89,7 @@ export function Navigation() {
   const { data: githubData } = useQuery({
     queryKey: ['githubStars'],
     queryFn: async () => {
-      const response = await fetch('https://api.github.com/repos/Mail-0/Zero', {
+      const response = await fetch('https://api.github.com/repos/Mail-0/Skippy', {
         headers: {
           Accept: 'application/vnd.github.v3+json',
         },
@@ -114,7 +114,7 @@ export function Navigation() {
         <nav className="border-input/50 flex w-full max-w-4xl items-center justify-between gap-2 rounded-xl border-t bg-[#1E1E1E] p-3 px-6">
           <div className="flex items-center gap-6">
             <Link to="/" className="relative bottom-1 cursor-pointer">
-              <img src="white-icon.svg" alt="Zero Email" width={22} height={22} />
+              <img src="white-icon.svg" alt="Skippy Email" width={22} height={22} />
               <span className="text-muted-foreground absolute -right-[-0.5px] text-[10px]">
                 beta
               </span>
@@ -171,7 +171,7 @@ export function Navigation() {
           </div>
           <div className="flex gap-2">
             <a
-              href="https://github.com/Mail-0/Zero"
+              href="https://github.com/Mail-0/Skippy"
               target="_blank"
               rel="noopener noreferrer"
               className={cn(
@@ -226,7 +226,7 @@ export function Navigation() {
                 <Link to="/" onClick={() => setOpen(false)}>
                   <img
                     src="white-icon.svg"
-                    alt="Zero Email"
+                    alt="Skippy Email"
                     className="hidden object-contain dark:block"
                     width={22}
                     height={22}

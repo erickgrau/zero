@@ -1,6 +1,6 @@
 import { phoneNumberClient } from 'better-auth/client/plugins';
 import { createAuthClient } from 'better-auth/react';
-import type { Auth } from '@zero/server/auth';
+import type { Auth } from '@skippy/server/auth';
 
 export const authClient = createAuthClient({
   baseURL: import.meta.env.VITE_PUBLIC_BACKEND_URL,

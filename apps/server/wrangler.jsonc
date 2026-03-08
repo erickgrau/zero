@@ -36,19 +36,19 @@
         "bindings": [
           {
             "name": "ZERO_AGENT",
-            "class_name": "ZeroAgent",
+            "class_name": "SkippyAgent",
           },
           {
             "name": "ZERO_MCP",
-            "class_name": "ZeroMCP",
+            "class_name": "SkippyMCP",
           },
           {
             "name": "ZERO_DB",
-            "class_name": "ZeroDB",
+            "class_name": "SkippyDB",
           },
           {
             "name": "ZERO_DRIVER",
-            "class_name": "ZeroDriver",
+            "class_name": "SkippyDriver",
           },
           {
             "name": "THINKING_MCP",
@@ -115,11 +115,11 @@
         },
         {
           "tag": "v2",
-          "new_sqlite_classes": ["ZeroAgent", "ZeroMCP"],
+          "new_sqlite_classes": ["SkippyAgent", "SkippyMCP"],
         },
         {
           "tag": "v3",
-          "new_classes": ["ZeroDB"],
+          "new_classes": ["SkippyDB"],
         },
         {
           "tag": "v4",
@@ -127,7 +127,7 @@
         },
         {
           "tag": "v5",
-          "new_sqlite_classes": ["ZeroDriver"],
+          "new_sqlite_classes": ["SkippyDriver"],
         },
         {
           "tag": "v6",
@@ -257,19 +257,19 @@
         "bindings": [
           {
             "name": "ZERO_AGENT",
-            "class_name": "ZeroAgent",
+            "class_name": "SkippyAgent",
           },
           {
             "name": "ZERO_MCP",
-            "class_name": "ZeroMCP",
+            "class_name": "SkippyMCP",
           },
           {
             "name": "ZERO_DB",
-            "class_name": "ZeroDB",
+            "class_name": "SkippyDB",
           },
           {
             "name": "ZERO_DRIVER",
-            "class_name": "ZeroDriver",
+            "class_name": "SkippyDriver",
           },
           {
             "name": "THINKING_MCP",
@@ -342,15 +342,15 @@
         },
         {
           "tag": "v2",
-          "new_sqlite_classes": ["ZeroAgent", "ZeroMCP"],
+          "new_sqlite_classes": ["SkippyAgent", "SkippyMCP"],
         },
         {
           "tag": "v3",
-          "new_classes": ["ZeroDB"],
+          "new_classes": ["SkippyDB"],
         },
         {
           "tag": "v4",
-          "new_sqlite_classes": ["ZeroAgent"],
+          "new_sqlite_classes": ["SkippyAgent"],
         },
         {
           "tag": "v5",
@@ -358,7 +358,7 @@
         },
         {
           "tag": "v6",
-          "new_sqlite_classes": ["ZeroDriver"],
+          "new_sqlite_classes": ["SkippyDriver"],
         },
         {
           "tag": "v7",
@@ -491,19 +491,19 @@
         "bindings": [
           {
             "name": "ZERO_AGENT",
-            "class_name": "ZeroAgent",
+            "class_name": "SkippyAgent",
           },
           {
             "name": "ZERO_MCP",
-            "class_name": "ZeroMCP",
+            "class_name": "SkippyMCP",
           },
           {
             "name": "ZERO_DB",
-            "class_name": "ZeroDB",
+            "class_name": "SkippyDB",
           },
           {
             "name": "ZERO_DRIVER",
-            "class_name": "ZeroDriver",
+            "class_name": "SkippyDriver",
           },
           {
             "name": "THINKING_MCP",
@@ -570,15 +570,15 @@
         },
         {
           "tag": "v2",
-          "new_sqlite_classes": ["ZeroAgent", "ZeroMCP"],
+          "new_sqlite_classes": ["SkippyAgent", "SkippyMCP"],
         },
         {
           "tag": "v3",
-          "new_classes": ["ZeroDB"],
+          "new_classes": ["SkippyDB"],
         },
         {
           "tag": "v4",
-          "new_sqlite_classes": ["ZeroAgent"],
+          "new_sqlite_classes": ["SkippyAgent"],
         },
         {
           "tag": "v5",
@@ -586,7 +586,7 @@
         },
         {
           "tag": "v6",
-          "new_sqlite_classes": ["ZeroDriver"],
+          "new_sqlite_classes": ["SkippyDriver"],
         },
         {
           "tag": "v7",

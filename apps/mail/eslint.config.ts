@@ -1,3 +1,3 @@
-import config from '@zero/eslint-config';
+import config from '@skippy/eslint-config';
 
 export default config;

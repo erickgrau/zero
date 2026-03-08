@@ -1,5 +1,5 @@
 /*
- * Licensed to Zero Email Inc. under one or more contributor license agreements.
+ * Licensed to Skippy Email Inc. under one or more contributor license agreements.
  * You may not use this file except in compliance with the Apache License, Version 2.0 (the "License").
  * You may obtain a copy of the License at
  *
@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Reuse or distribution of this file requires a license from Zero Email Inc.
+ * Reuse or distribution of this file requires a license from Skippy Email Inc.
  */
 
 import {
@@ -43,7 +43,7 @@ import {
   type ParsedMessage,
 } from '../../types';
 import type { IGetThreadResponse, IGetThreadsResponse, MailManager } from '../../lib/driver/types';
-import { connectionToDriver, getZeroSocketAgent, reSyncThread } from '../../lib/server-utils';
+import { connectionToDriver, getSkippySocketAgent, reSyncThread } from '../../lib/server-utils';
 import { generateWhatUserCaresAbout, type UserTopic } from '../../lib/analyze/interests';
 import { DurableObjectOAuthClientProvider } from 'agents/mcp/do-oauth-client-provider';
 import { AiChatPrompt, GmailSearchAssistantSystemPrompt } from '../../lib/prompts';
@@ -62,9 +62,10 @@ import { connection } from '../../db/schema';
 import type { WSMessage } from 'partyserver';
 import { tools as authTools } from './tools';
 import { processToolCalls } from './utils';
-import { type ZeroEnv } from '../../env';
+import { type SkippyEnv } from '../../env';
 import { type Connection } from 'agents';
 import { openai } from '@ai-sdk/openai';
+import { getModel } from '../../lib/llm-provider';
 import * as schema from './db/schema';
 import { threads } from './db/schema';
 import { Effect, pipe } from 'effect';
@@ -246,19 +247,19 @@ export interface CachedTopics {
 // Requirements interface
 export interface TopicGenerationRequirements {
   readonly storage: DurableObjectStorage;
-  readonly agent?: DurableObjectStub<ZeroAgent>;
+  readonly agent?: DurableObjectStub<SkippyAgent>;
   readonly connectionId: string;
 }
 
 export interface ThreadSyncRequirements {
   readonly driver: MailManager;
-  readonly agent?: DurableObjectStub<ZeroAgent>;
+  readonly agent?: DurableObjectStub<SkippyAgent>;
   readonly connectionId: string;
 }
 
 export interface FolderSyncRequirements {
   readonly driver: MailManager;
-  readonly agent?: DurableObjectStub<ZeroAgent>;
+  readonly agent?: DurableObjectStub<SkippyAgent>;
   readonly connectionId: string;
 }
 
@@ -307,9 +308,9 @@ const _migrations = Object.fromEntries(
   },
 })
 @Queryable()
-export class ShardRegistry extends DurableObject<ZeroEnv> {
+export class ShardRegistry extends DurableObject<SkippyEnv> {
   sql: SqlStorage;
-  constructor(ctx: DurableObjectState, env: ZeroEnv) {
+  constructor(ctx: DurableObjectState, env: SkippyEnv) {
     super(ctx, env);
     this.sql = ctx.storage.sql;
   }
@@ -319,13 +320,13 @@ export class ShardRegistry extends DurableObject<ZeroEnv> {
   migrations: _migrations,
 })
 @Queryable()
-export class ZeroDriver extends DurableObject<ZeroEnv> {
+export class SkippyDriver extends DurableObject<SkippyEnv> {
   transfer = new Transfer(this);
   sql: SqlStorage;
   private db: DB;
   private syncThreadsInProgress: Map<string, boolean> = new Map();
   private driver: MailManager | null = null;
-  private agent: DurableObjectStub<ZeroAgent> | null = null;
+  private agent: DurableObjectStub<SkippyAgent> | null = null;
   private name: string = 'general';
   private connection: typeof connection.$inferSelect | null = null;
   private recipientCache: {
@@ -378,7 +379,7 @@ export class ZeroDriver extends DurableObject<ZeroEnv> {
     return { email, name };
   }
 
-  constructor(ctx: DurableObjectState, env: ZeroEnv) {
+  constructor(ctx: DurableObjectState, env: SkippyEnv) {
     super(ctx, env);
     this.sql = ctx.storage.sql;
     this.db = drizzle(ctx.storage, { schema });
@@ -393,6 +394,15 @@ export class ZeroDriver extends DurableObject<ZeroEnv> {
 
   getDatabaseSize() {
     return this.ctx.storage.sql.databaseSize;
+  }
+
+  async getUserId(): Promise<string | undefined> {
+    const connectionString = (this.env as any).DATABASE_URL || (this.env as any).HYPERDRIVE?.connectionString;
+    const { db } = createDb(connectionString);
+    const connRec = await db.query.connection.findFirst({
+      where: eq(connection.id, this.name)
+    });
+    return connRec?.userId;
   }
 
   async isSyncing(): Promise<boolean> {
@@ -511,9 +521,11 @@ export class ZeroDriver extends DurableObject<ZeroEnv> {
 
       existingLabels = existingLabelsResult;
 
-      const topics = yield* Effect.tryPromise(() =>
-        generateWhatUserCaresAbout(subjects, { existingLabels }),
-      ).pipe(
+      const topics = yield* Effect.tryPromise(async () => {
+        const userId = await this.getUserId();
+        if (!userId) return [];
+        return generateWhatUserCaresAbout(subjects, userId, { existingLabels });
+      }).pipe(
         Effect.tap((topics) =>
           Effect.sync(() => {
             result.topics = topics;
@@ -712,7 +724,7 @@ export class ZeroDriver extends DurableObject<ZeroEnv> {
       }
       this.ctx.waitUntil(conn.end());
     }
-    if (!this.agent) this.agent = await getZeroSocketAgent(this.name);
+    if (!this.agent) this.agent = await getSkippySocketAgent(this.name);
   }
 
   async syncFolders() {
@@ -1124,13 +1136,14 @@ export class ZeroDriver extends DurableObject<ZeroEnv> {
       }),
     ).pipe(Effect.catchAll(() => Effect.succeed([])));
 
-    const genQueryEffect = Effect.tryPromise(() =>
-      generateText({
-        model: openai(this.env.OPENAI_MODEL || 'gpt-4o'),
+    const genQueryEffect = Effect.tryPromise(async () => {
+      const userId = await this.getUserId();
+      return generateText({
+        model: await getModel({ userId }),
         system: GmailSearchAssistantSystemPrompt(),
         prompt: params.query,
-      }).then((response) => response.text),
-    ).pipe(Effect.catchAll(() => Effect.succeed(query)));
+      }).then((response) => response.text);
+    }).pipe(Effect.catchAll(() => Effect.succeed(query)));
 
     const genQueryResult = await Effect.runPromise(genQueryEffect);
 
@@ -1655,16 +1668,16 @@ export class ZeroDriver extends DurableObject<ZeroEnv> {
         labelIds,
       );
       //   await sendDoState(this.name);
-      console.log(`[ZeroDriver] Successfully stored thread ${threadData.id} in database`);
+      console.log(`[SkippyDriver] Successfully stored thread ${threadData.id} in database`);
     } catch (error) {
-      console.error(`[ZeroDriver] Failed to store thread ${threadData.id} in database:`, error);
+      console.error(`[SkippyDriver] Failed to store thread ${threadData.id} in database:`, error);
       throw error;
     }
   }
 
   private async triggerSyncWorkflow(folder: string): Promise<void> {
     try {
-      console.log(`[ZeroDriver] Triggering sync coordinator workflow for ${this.name}/${folder}`);
+      console.log(`[SkippyDriver] Triggering sync coordinator workflow for ${this.name}/${folder}`);
 
       const instance = await this.env.SYNC_THREADS_COORDINATOR_WORKFLOW.create({
         params: {
@@ -1674,11 +1687,11 @@ export class ZeroDriver extends DurableObject<ZeroEnv> {
       });
 
       console.log(
-        `[ZeroDriver] Sync coordinator workflow triggered for ${this.name}/${folder}, instance: ${instance.id}`,
+        `[SkippyDriver] Sync coordinator workflow triggered for ${this.name}/${folder}, instance: ${instance.id}`,
       );
     } catch (error) {
       console.error(
-        `[ZeroDriver] Failed to trigger sync coordinator workflow for ${this.name}/${folder}:`,
+        `[SkippyDriver] Failed to trigger sync coordinator workflow for ${this.name}/${folder}:`,
         error,
       );
       //   try {
@@ -1689,18 +1702,18 @@ export class ZeroDriver extends DurableObject<ZeroEnv> {
       //         folder: folder,
       //       },
       //     });
-      //     console.log(`[ZeroDriver] Fallback to original workflow: ${fallbackInstance.id}`);
+      //     console.log(`[SkippyDriver] Fallback to original workflow: ${fallbackInstance.id}`);
       //   } catch (fallbackError) {
-      //     console.error(`[ZeroDriver] Fallback workflow also failed:`, fallbackError);
+      //     console.error(`[SkippyDriver] Fallback workflow also failed:`, fallbackError);
       //   }
     }
   }
 }
 
-export class ZeroAgent extends AIChatAgent<ZeroEnv> {
+export class SkippyAgent extends AIChatAgent<SkippyEnv> {
   private chatMessageAbortControllers: Map<string, AbortController> = new Map();
 
-  async registerZeroMCP() {
+  async registerSkippyMCP() {
     await this.mcp.connect(this.env.VITE_PUBLIC_BACKEND_URL + '/sse', {
       transport: {
         authProvider: new DurableObjectOAuthClientProvider(
@@ -1770,10 +1783,8 @@ export class ZeroAgent extends AIChatAgent<ZeroEnv> {
           {},
         );
 
-        const model =
-          this.env.USE_OPENAI === 'true'
-            ? groq('openai/gpt-oss-120b')
-            : anthropic(this.env.OPENAI_MODEL || 'claude-3-7-sonnet-20250219');
+        const userId = await this.getUserId();
+        const model = await getModel({ userId });
 
         const result = streamText({
           model,
@@ -2011,7 +2022,7 @@ export class ZeroAgent extends AIChatAgent<ZeroEnv> {
 
       return data;
     } catch (error) {
-      console.error('[ZeroAgent] Failed to get cached DO state:', error);
+      console.error('[SkippyAgent] Failed to get cached DO state:', error);
       return null;
     }
   }
@@ -2030,7 +2041,7 @@ export class ZeroAgent extends AIChatAgent<ZeroEnv> {
       };
       await this.ctx.storage.put('do_state_cache', data);
     } catch (error) {
-      console.error('[ZeroAgent] Failed to cache DO state:', error);
+      console.error('[SkippyAgent] Failed to cache DO state:', error);
     }
   }
 
@@ -2038,7 +2049,7 @@ export class ZeroAgent extends AIChatAgent<ZeroEnv> {
     try {
       await this.ctx.storage.delete('do_state_cache');
     } catch (error) {
-      console.error('[ZeroAgent] Failed to invalidate DO state cache:', error);
+      console.error('[SkippyAgent] Failed to invalidate DO state cache:', error);
     }
   }
 

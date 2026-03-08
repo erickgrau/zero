@@ -1,4 +1,4 @@
-import { getActiveConnection, getZeroDB } from '../lib/server-utils';
+import { getActiveConnection, getSkippyDB } from '../lib/server-utils';
 import { Ratelimit, type RatelimitConfig } from '@upstash/ratelimit';
 import type { HonoContext, HonoVariables } from '../ctx';
 import { getConnInfo } from 'hono/cloudflare-workers';
@@ -116,14 +116,14 @@ export const activeDriverProcedure = activeConnectionProcedure.use(async ({ ctx,
     // Handle token expiration/refresh issues
     if (errorMessage.includes('invalid_grant')) {
       // Remove the access token and refresh token
-      const db = await getZeroDB(sessionUser.id);
+      const db = await getSkippyDB(sessionUser.id);
       await db.updateConnection(activeConnection.id, {
         accessToken: null,
         refreshToken: null,
       });
 
       ctx.c.header(
-        'X-Zero-Redirect',
+        'X-Skippy-Redirect',
         `/settings/connections?disconnectedConnectionId=${activeConnection.id}`,
       );
 

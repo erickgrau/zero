@@ -204,6 +204,24 @@ export const userSettings = createTable(
   (t) => [index('user_settings_settings_idx').on(t.settings)],
 );
 
+export const credentials = createTable(
+  'credentials',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    name: text('name').notNull(),
+    value: text('value').notNull(),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  (t) => [
+    index('credentials_user_id_idx').on(t.userId),
+    unique('credentials_user_id_name_unique').on(t.userId, t.name),
+  ],
+);
+
 export const writingStyleMatrix = createTable(
   'writing_style_matrix',
   {

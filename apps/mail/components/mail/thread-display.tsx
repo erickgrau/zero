@@ -737,7 +737,7 @@ export function ThreadDisplay() {
                     <Sparkles className="mr-1 h-3.5 w-3.5 fill-[#959595]" />
                     <div className="flex items-center justify-center gap-2.5 px-0.5">
                       <div className="text-base-gray-950 justify-start text-sm leading-none">
-                        Zero chat
+                        Skippy chat
                       </div>
                     </div>
                   </button>

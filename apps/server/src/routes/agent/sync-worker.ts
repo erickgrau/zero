@@ -3,11 +3,11 @@ import { connectionToDriver } from '../../lib/server-utils';
 import { withRetry } from '../../lib/gmail-rate-limit';
 import { DurableObject } from 'cloudflare:workers';
 import type { ParsedMessage } from '../../types';
-import type { ZeroEnv } from '../../env';
+import type { SkippyEnv } from '../../env';
 import { Effect } from 'effect';
 
-export class ThreadSyncWorker extends DurableObject<ZeroEnv> {
-  constructor(state: DurableObjectState, env: ZeroEnv) {
+export class ThreadSyncWorker extends DurableObject<SkippyEnv> {
+  constructor(state: DurableObjectState, env: SkippyEnv) {
     super(state, env);
   }
 

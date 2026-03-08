@@ -1,26 +1,26 @@
 <p align="center">
   <picture>
     <source srcset="apps/mail/public/white-icon.svg" media="(prefers-color-scheme: dark)">
-    <img src="apps/mail/public/black-icon.svg" alt="Zero Logo" width="64" style="background-color: #000; padding: 10px;"/>
+    <img src="apps/mail/public/black-icon.svg" alt="Skippy Logo" width="64" style="background-color: #000; padding: 10px;"/>
   </picture>
 </p>
 
-# Zero
+# Skippy
 
 An Open-Source Gmail Alternative for the Future of Email
 
-## What is Zero?
+## What is Skippy?
 
-Zero is an open-source AI email solution that gives users the power to **self-host** their own email app while also integrating external services like Gmail and other email providers. Our goal is to modernize and improve emails through AI agents to truly modernize emails.
+Skippy is an open-source AI email solution that gives users the power to **self-host** their own email app while also integrating external services like Gmail and other email providers. Our goal is to modernize and improve emails through AI agents to truly modernize emails.
 
-## Why Zero?
+## Why Skippy?
 
 Most email services today are either **closed-source**, **data-hungry**, or **too complex to self-host**.
 0.email is different:
 
 - ✅ **Open-Source** – No hidden agendas, fully transparent.
 - 🦾 **AI Driven** - Enhance your emails with Agents & LLMs.
-- 🔒 **Data Privacy First** – Your emails, your data. Zero does not track, collect, or sell your data in any way. Please note: while we integrate with external services, the data passed through them is not under our control and falls under their respective privacy policies and terms of service.
+- 🔒 **Data Privacy First** – Your emails, your data. Skippy does not track, collect, or sell your data in any way. Please note: while we integrate with external services, the data passed through them is not under our control and falls under their respective privacy policies and terms of service.
 - ⚙️ **Self-Hosting Freedom** – Run your own email app with ease.
 - 📬 **Unified Inbox** – Connect multiple email providers like Gmail, Outlook, and more.
 - 🎨 **Customizable UI & Features** – Tailor your email experience the way you want it.
@@ -28,7 +28,7 @@ Most email services today are either **closed-source**, **data-hungry**, or **to
 
 ## Tech Stack
 
-Zero is built with modern and reliable technologies:
+Skippy is built with modern and reliable technologies:
 
 - **Frontend**: Next.js, React, TypeScript, TailwindCSS, Shadcn UI
 - **Backend**: Node.js, Drizzle ORM
@@ -40,11 +40,11 @@ Zero is built with modern and reliable technologies:
 
 ### Video Tutorial
 
-Watch this helpful video tutorial on how to set up Zero locally:
+Watch this helpful video tutorial on how to set up Skippy locally:
 
 <p align="center">
   <a href="https://www.youtube.com/watch?v=yIXLQcjbeEM">
-    <img src="https://img.youtube.com/vi/yIXLQcjbeEM/0.jpg" alt="Zero Setup Tutorial" />
+    <img src="https://img.youtube.com/vi/yIXLQcjbeEM/0.jpg" alt="Skippy Setup Tutorial" />
   </a>
 </p>
 
@@ -60,7 +60,7 @@ Before running the application, you'll need to set up services and configure env
 
 ### Setup Options
 
-You can set up Zero in two ways:
+You can set up Skippy in two ways:
 
 <details open>
 <summary><b>Standard Setup (Recommended)</b></summary>
@@ -71,8 +71,8 @@ You can set up Zero in two ways:
 
    ```bash
    # Clone the repository
-   git clone https://github.com/Mail-0/Zero.git
-   cd Zero
+   git clone https://github.com/Mail-0/Skippy.git
+   cd Skippy
 
    # Install dependencies
    pnpm install
@@ -108,8 +108,8 @@ You can set up Zero in two ways:
 
    ```bash
    # Clone the repository
-   git clone https://github.com/Mail-0/Zero.git
-   cd Zero
+   git clone https://github.com/Mail-0/Skippy.git
+   cd Skippy
    ```
 
    Then open the code in devcontainer and install the dependencies:
@@ -213,7 +213,7 @@ For local development a connection string example is provided in the `.env.examp
 
 ### Database Setup
 
-Zero uses PostgreSQL for storing data. Here's how to set it up:
+Skippy uses PostgreSQL for storing data. Here's how to set it up:
 
 1. **Start the Database**
 
@@ -279,11 +279,11 @@ This also introduces 3 environment variables, `DROP_AGENT_TABLES`,`THREAD_SYNC_M
 
 Please refer to the [contributing guide](.github/CONTRIBUTING.md).
 
-If you'd like to help with translating Zero to other languages, check out our [translation guide](.github/TRANSLATION.md).
+If you'd like to help with translating Skippy to other languages, check out our [translation guide](.github/TRANSLATION.md).
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=Mail-0/Zero&type=Timeline)](https://www.star-history.com/#Mail-0/Zero&Timeline)
+[![Star History Chart](https://api.star-history.com/svg?repos=Mail-0/Skippy&type=Timeline)](https://www.star-history.com/#Mail-0/Skippy&Timeline)
 
 ## This project wouldn't be possible without these awesome companies
 
@@ -304,4 +304,4 @@ If you'd like to help with translating Zero to other languages, check out our [t
 
 ## 🤍 The team
 
-Curious who makes Zero? Here are our [contributors and maintainers](https://0.email/contributors)
+Curious who makes Skippy? Here are our [contributors and maintainers](https://0.email/contributors)

@@ -13,8 +13,8 @@ export enum Tools {
   BulkDelete = 'bulkDelete',
   BulkArchive = 'bulkArchive',
   DeleteLabel = 'deleteLabel',
-  AskZeroMailbox = 'askZeroMailbox',
-  AskZeroThread = 'askZeroThread',
+  AskSkippyMailbox = 'askSkippyMailbox',
+  AskSkippyThread = 'askSkippyThread',
   WebSearch = 'webSearch',
   InboxRag = 'inboxRag',
 }

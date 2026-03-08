@@ -22,7 +22,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { SettingsCard } from '@/components/settings/settings-card';
 import { Check, ChevronDown, Trash2, Plus } from 'lucide-react';
 import type { CategorySetting } from '@/hooks/use-categories';
-import { defaultMailCategories } from '@zero/server/schemas';
+import { defaultMailCategories } from '@skippy/server/schemas';
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTRPC } from '@/providers/query-provider';
 import { useSettings } from '@/hooks/use-settings';
@@ -344,7 +344,7 @@ export default function CategoriesSettingsPage() {
   return (
     <SettingsCard
       title={m['navigation.settings.categories']()}
-      description="Customise how Zero shows the category tabs in your inbox. Drag and drop to reorder."
+      description="Customise how Skippy shows the category tabs in your inbox. Drag and drop to reorder."
       footer={
         <div className="flex justify-between">
           <Button type="button" variant="outline" onClick={handleResetToDefaults}>

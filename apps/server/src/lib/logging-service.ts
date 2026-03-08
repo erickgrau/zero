@@ -1,6 +1,6 @@
 import type { TRPCCallLog, LoggingState, SessionStats } from '../types/logging';
 import { DatadogService } from './datadog-service';
-import type { ZeroEnv } from '../env';
+import type { SkippyEnv } from '../env';
 
 // In-memory session storage for stats
 // In a production environment, you might want to use a distributed cache like Redis
@@ -9,7 +9,7 @@ const sessionStats = new Map<string, LoggingState>();
 export class LoggingService {
     private datadogService: DatadogService;
 
-    constructor(env: ZeroEnv) {
+    constructor(env: SkippyEnv) {
         this.datadogService = new DatadogService(env);
     }
 

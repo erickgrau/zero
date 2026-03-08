@@ -1,4 +1,4 @@
-import config from "@zero/tsconfig/base";
+import config from "@skippy/tsconfig/base";
 import { fileURLToPath } from "url";
 
 

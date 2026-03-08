@@ -383,7 +383,7 @@ function AISidebar({ className }: AISidebarProps) {
   );
 
   const agent = useAgent({
-    agent: 'ZeroAgent',
+    agent: 'SkippyAgent',
     name: activeConnection?.id ? String(activeConnection.id) : 'general',
     host: `${import.meta.env.VITE_PUBLIC_BACKEND_URL}`,
     onError: (e) => console.log(e),

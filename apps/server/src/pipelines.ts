@@ -16,14 +16,14 @@ import {
   type WorkflowContext,
 } from './thread-workflow-utils/workflow-engine';
 import { getServiceAccount } from './lib/factories/google-subscription.factory';
-import { getThread, getZeroAgent } from './lib/server-utils';
+import { getThread, getSkippyAgent } from './lib/server-utils';
 import { DurableObject } from 'cloudflare:workers';
 import { bulkDeleteKeys } from './lib/bulk-delete';
 import { type gmail_v1 } from '@googleapis/gmail';
 import { Effect, Console, Logger } from 'effect';
 import { connection } from './db/schema';
 import { EProviders } from './types';
-import type { ZeroEnv } from './env';
+import type { SkippyEnv } from './env';
 import { initTracing } from './lib/tracing';
 import { EPrompts } from './types';
 import { eq } from 'drizzle-orm';
@@ -64,7 +64,7 @@ export const getPromptName = (connectionId: string, prompt: EPrompts) => {
   return `${connectionId}-${prompt}`;
 };
 
-export type ZeroWorkflowParams = {
+export type SkippyWorkflowParams = {
   connectionId: string;
   historyId: string;
   nextHistoryId: string;
@@ -91,7 +91,7 @@ export enum EWorkflowType {
 export type WorkflowParams =
   | { workflowType: 'main'; params: MainWorkflowParams }
   | { workflowType: 'thread'; params: ThreadWorkflowParams }
-  | { workflowType: 'zero'; params: ZeroWorkflowParams };
+  | { workflowType: 'zero'; params: SkippyWorkflowParams };
 
 export type MainWorkflowError =
   | { _tag: 'MissingEnvironmentVariable'; variable: string }
@@ -100,7 +100,7 @@ export type MainWorkflowError =
   | { _tag: 'UnsupportedProvider'; providerId: string }
   | { _tag: 'WorkflowCreationFailed'; error: unknown };
 
-export type ZeroWorkflowError =
+export type SkippyWorkflowError =
   | { _tag: 'HistoryAlreadyProcessing'; connectionId: string; historyId: string }
   | { _tag: 'ConnectionNotFound'; connectionId: string }
   | { _tag: 'ConnectionNotAuthorized'; connectionId: string }
@@ -125,12 +125,12 @@ export type UnsupportedWorkflowError = { _tag: 'UnsupportedWorkflow'; workflowTy
 
 export type WorkflowError =
   | MainWorkflowError
-  | ZeroWorkflowError
+  | SkippyWorkflowError
   | ThreadWorkflowError
   | UnsupportedWorkflowError;
 
-export class WorkflowRunner extends DurableObject<ZeroEnv> {
-  constructor(state: DurableObjectState, env: ZeroEnv) {
+export class WorkflowRunner extends DurableObject<SkippyEnv> {
+  constructor(state: DurableObjectState, env: SkippyEnv) {
     super(state, env);
   }
 
@@ -190,11 +190,11 @@ export class WorkflowRunner extends DurableObject<ZeroEnv> {
         };
 
         const result = yield* Effect.tryPromise({
-          try: () => this.runZeroWorkflow(zeroWorkflowParams),
+          try: () => this.runSkippyWorkflow(zeroWorkflowParams),
           catch: (error) => ({ _tag: 'WorkflowCreationFailed' as const, error }),
         });
 
-        yield* Console.log('[MAIN_WORKFLOW] Zero workflow result:', result);
+        yield* Console.log('[MAIN_WORKFLOW] Skippy workflow result:', result);
         span.setAttributes({ 'workflow.result': typeof result === 'string' ? result : JSON.stringify(result) });
       } else {
         yield* Console.log('[MAIN_WORKFLOW] Unsupported provider:', providerId);
@@ -221,7 +221,7 @@ export class WorkflowRunner extends DurableObject<ZeroEnv> {
     );
   }
 
-  public runZeroWorkflow(params: ZeroWorkflowParams) {
+  public runSkippyWorkflow(params: SkippyWorkflowParams) {
     return Effect.gen(this, function* () {
       yield* Console.log('[ZERO_WORKFLOW] Starting workflow with payload:', params);
       const { connectionId, historyId, nextHistoryId } = params;
@@ -290,7 +290,7 @@ export class WorkflowRunner extends DurableObject<ZeroEnv> {
 
       const agent = yield* Effect.tryPromise({
         try: async () => {
-          const { stub: agent } = await getZeroAgent(foundConnection.id);
+          const { stub: agent } = await getSkippyAgent(foundConnection.id);
           return agent;
         },
         catch: (error) => ({ _tag: 'DatabaseError' as const, error }),
@@ -526,7 +526,7 @@ export class WorkflowRunner extends DurableObject<ZeroEnv> {
         }
 
         yield* Console.log('[ZERO_WORKFLOW] Processing complete');
-        return 'Zero workflow completed successfully';
+        return 'Skippy workflow completed successfully';
       } else {
         yield* Console.log('[ZERO_WORKFLOW] Unsupported provider:', foundConnection.providerId);
         return yield* Effect.fail({

@@ -3,7 +3,7 @@ import { toast } from 'sonner';
 
 import { useTRPC } from '@/providers/query-provider';
 import { isSendResult } from '@/lib/email-utils';
-import type { UserSettings } from '@zero/server/schemas';
+import type { UserSettings } from '@skippy/server/schemas';
 
 export type EmailData = {
   to: string[];

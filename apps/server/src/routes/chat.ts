@@ -28,6 +28,7 @@ import type { Message as ChatMessage } from 'ai';
 import { getPromptName } from '../pipelines';
 import { connection } from '../db/schema';
 import { getPrompt } from '../lib/brain';
+import { getModel } from '../lib/llm-provider';
 import { openai } from '@ai-sdk/openai';
 import { and, eq } from 'drizzle-orm';
 import { McpAgent } from 'agents/mcp';
@@ -69,67 +70,67 @@ export enum OutgoingMessageType {
 
 export type IncomingMessage =
   | {
-      type: IncomingMessageType.UseChatRequest;
-      id: string;
-      init: Pick<RequestInit, 'method' | 'headers' | 'body'>;
-    }
+    type: IncomingMessageType.UseChatRequest;
+    id: string;
+    init: Pick<RequestInit, 'method' | 'headers' | 'body'>;
+  }
   | {
-      type: IncomingMessageType.ChatClear;
-    }
+    type: IncomingMessageType.ChatClear;
+  }
   | {
-      type: IncomingMessageType.ChatMessages;
-      messages: ChatMessage[];
-    }
+    type: IncomingMessageType.ChatMessages;
+    messages: ChatMessage[];
+  }
   | {
-      type: IncomingMessageType.ChatRequestCancel;
-      id: string;
-    }
+    type: IncomingMessageType.ChatRequestCancel;
+    id: string;
+  }
   | {
-      type: IncomingMessageType.Mail_List;
-      folder: string;
-      query: string;
-      maxResults: number;
-      labelIds: string[];
-      pageToken: string;
-    }
+    type: IncomingMessageType.Mail_List;
+    folder: string;
+    query: string;
+    maxResults: number;
+    labelIds: string[];
+    pageToken: string;
+  }
   | {
-      type: IncomingMessageType.Mail_Get;
-      threadId: string;
-    };
+    type: IncomingMessageType.Mail_Get;
+    threadId: string;
+  };
 
 export type OutgoingMessage =
   | {
-      type: OutgoingMessageType.ChatMessages;
-      messages: ChatMessage[];
-    }
+    type: OutgoingMessageType.ChatMessages;
+    messages: ChatMessage[];
+  }
   | {
-      type: OutgoingMessageType.UseChatResponse;
-      id: string;
-      body: string;
-      done: boolean;
-    }
+    type: OutgoingMessageType.UseChatResponse;
+    id: string;
+    body: string;
+    done: boolean;
+  }
   | {
-      type: OutgoingMessageType.ChatClear;
-    }
+    type: OutgoingMessageType.ChatClear;
+  }
   | {
-      type: OutgoingMessageType.Mail_List;
-      result: {
-        threads: {
-          id: string;
-          historyId: string | null;
-        }[];
-        nextPageToken: string | null;
-      };
-    }
-  | {
-      type: OutgoingMessageType.Mail_Get;
-      result: IGetThreadResponse;
-      threadId: string;
+    type: OutgoingMessageType.Mail_List;
+    result: {
+      threads: {
+        id: string;
+        historyId: string | null;
+      }[];
+      nextPageToken: string | null;
     };
+  }
+  | {
+    type: OutgoingMessageType.Mail_Get;
+    result: IGetThreadResponse;
+    threadId: string;
+  };
 
 export class AgentRpcDO extends RpcTarget {
   constructor(
-    private mainDo: ZeroAgent,
+    private mainDo: SkippyAgent,
     private connectionId: string,
   ) {
     super();
@@ -306,7 +307,7 @@ const shouldDropTables = env.DROP_AGENT_TABLES === 'true';
 const maxCount = parseInt(env.THREAD_SYNC_MAX_COUNT || '40', 10);
 const shouldLoop = env.THREAD_SYNC_LOOP !== 'false';
 
-export class ZeroAgent extends AIChatAgent<typeof env> {
+export class SkippyAgent extends AIChatAgent<typeof env> {
   private chatMessageAbortControllers: Map<string, AbortController> = new Map();
   private foldersInSync: string[] = [];
   private currentFolder: string | null = 'inbox';
@@ -339,6 +340,15 @@ export class ZeroAgent extends AIChatAgent<typeof env> {
     return new AgentRpcDO(this, connectionId);
   }
 
+  async getUserId(): Promise<string | undefined> {
+    const { db, conn } = createDb(env.HYPERDRIVE.connectionString);
+    const connRec = await db.query.connection.findFirst({
+      where: eq(connection.id, this.name)
+    });
+    this.ctx.waitUntil(conn.end());
+    return connRec?.userId;
+  }
+
   private getDataStreamResponse(
     onFinish: StreamTextOnFinishCallback<{}>,
     options?: {
@@ -356,7 +366,8 @@ export class ZeroAgent extends AIChatAgent<typeof env> {
             throw new Error('Unauthorized no driver or connectionId [2]');
           }
         }
-        const tools = { ...authTools(this.driver, connectionId), buildGmailSearchQuery };
+        const userId = await this.getUserId();
+        const tools = { ...authTools(this.driver, connectionId), buildGmailSearchQuery: buildGmailSearchQueryTool(userId) };
         const processedMessages = await processToolCalls(
           {
             messages: this.messages,
@@ -367,7 +378,7 @@ export class ZeroAgent extends AIChatAgent<typeof env> {
         );
 
         const result = streamText({
-          model: openai('gpt-4o'),
+          model: await getModel({ userId }),
           messages: processedMessages,
           tools,
           onFinish,
@@ -692,8 +703,9 @@ export class ZeroAgent extends AIChatAgent<typeof env> {
   }
 
   async buildGmailSearchQuery(query: string) {
+    const userId = await this.getUserId();
     const result = await generateText({
-      model: openai('gpt-4o'),
+      model: await getModel({ userId }),
       system: GmailSearchAssistantSystemPrompt(),
       prompt: query,
     });
@@ -1166,11 +1178,11 @@ export class ZeroAgent extends AIChatAgent<typeof env> {
   }
 }
 
-export class ZeroMCP extends McpAgent<typeof env, {}, { userId: string }> {
+export class SkippyMCP extends McpAgent<typeof env, {}, { userId: string }> {
   server = new McpServer({
     name: 'zero-mcp',
     version: '1.0.0',
-    description: 'Zero MCP',
+    description: 'Skippy MCP',
   });
 
   activeConnectionId: string | undefined;
@@ -1253,7 +1265,7 @@ export class ZeroMCP extends McpAgent<typeof env, {}, { userId: string }> {
       },
       async (s) => {
         const result = await generateText({
-          model: openai('gpt-4o'),
+          model: await getModel({ userId: this.props.userId }),
           system: GmailSearchAssistantSystemPrompt(),
           prompt: s.query,
         });
@@ -1304,11 +1316,11 @@ export class ZeroMCP extends McpAgent<typeof env, {}, { userId: string }> {
           content: content.length
             ? content.flat()
             : [
-                {
-                  type: 'text' as const,
-                  text: 'No threads found',
-                },
-              ],
+              {
+                type: 'text' as const,
+                text: 'No threads found',
+              },
+            ],
         };
       },
     );
@@ -1498,9 +1510,9 @@ export class ZeroMCP extends McpAgent<typeof env, {}, { userId: string }> {
             color:
               s.backgroundColor && s.textColor
                 ? {
-                    backgroundColor: s.backgroundColor,
-                    textColor: s.textColor,
-                  }
+                  backgroundColor: s.backgroundColor,
+                  textColor: s.textColor,
+                }
                 : undefined,
           });
           return {
@@ -1591,14 +1603,14 @@ export class ZeroMCP extends McpAgent<typeof env, {}, { userId: string }> {
   }
 }
 
-const buildGmailSearchQuery = tool({
+const buildGmailSearchQueryTool = (userId?: string) => tool({
   description: 'Build a Gmail search query',
   parameters: z.object({
     query: z.string().describe('The search query to build, provided in natural language'),
   }),
   execute: async ({ query }) => {
     const result = await generateObject({
-      model: openai('gpt-4o'),
+      model: await getModel({ userId }),
       system: GmailSearchAssistantSystemPrompt(),
       prompt: query,
       schema: z.object({

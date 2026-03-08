@@ -466,8 +466,8 @@
         "customPromptPlaceholder": "Yapay zeka için özel yönergenizi girin...",
         "customPromptDescription": "Yapay zekanın e-posta yanıtlarınızı nasıl yazacağını özelleştirin. Bu, temel yönergeye eklenecektir.",
         "noResultsFound": "Sonuç bulunamadı",
-        "zeroSignature": "Zero İmzası",
-        "zeroSignatureDescription": "E-postalarınıza Zero imzası ekleyin.",
+        "zeroSignature": "Skippy İmzası",
+        "zeroSignatureDescription": "E-postalarınıza Skippy imzası ekleyin.",
         "undoSendEnabled": "Gönderimi Geri Al",
         "undoSendEnabledDescription": "E-postaları gönderdikten sonra 30 saniye içinde iptal etmeye izin ver.",
         "defaultEmailAlias": "Varsayılan E-posta Adresi",
@@ -480,7 +480,7 @@
       },
       "connections": {
         "title": "E-posta Bağlantıları",
-        "description": "E-posta hesaplarınızı Zero'ya bağlayın.",
+        "description": "E-posta hesaplarınızı Skippy'ya bağlayın.",
         "disconnectTitle": "E-posta Hesabını Bağlantıyı Kes",
         "disconnectDescription": "Bu e-posta bağlantısını kesmek istediğinizden emin misiniz?",
         "cancel": "İptal",
@@ -668,6 +668,6 @@
   "errorMessages": {
     "required_scopes_missing": "Tam deneyiminizi oluşturmak için gereken izinler eksik. Lütfen tekrar giriş yapın ve istenen erişime izin verin.",
     "early_access_required": "Giriş yapmak için erken erişim gereklidir",
-    "unauthorized": "Zero, verilerinizi 3. taraf sağlayıcıdan yükleyemedi. Lütfen tekrar deneyin."
+    "unauthorized": "Skippy, verilerinizi 3. taraf sağlayıcıdan yükleyemedi. Lütfen tekrar deneyin."
   }
 }

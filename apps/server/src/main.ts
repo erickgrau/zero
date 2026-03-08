@@ -23,9 +23,9 @@ import {
 import { SyncThreadsCoordinatorWorkflow } from './workflows/sync-threads-coordinator-workflow';
 import { WorkerEntrypoint, DurableObject, RpcTarget } from 'cloudflare:workers';
 // import { instrument, type ResolveConfigFn } from '@microlabs/otel-cf-workers';
-import { getZeroAgent, getZeroDB, verifyToken } from './lib/server-utils';
+import { getSkippyAgent, getSkippyDB, verifyToken } from './lib/server-utils';
 import { SyncThreadsWorkflow } from './workflows/sync-threads-workflow';
-import { ShardRegistry, ZeroAgent, ZeroDriver } from './routes/agent';
+import { ShardRegistry, SkippyAgent, SkippyDriver } from './routes/agent';
 import { ThreadSyncWorker } from './routes/agent/sync-worker';
 import { oAuthDiscoveryMetadata } from 'better-auth/plugins';
 import { EProviders, type IEmailSendBatch } from './types';
@@ -38,12 +38,12 @@ import { createLocalJWKSet, jwtVerify } from 'jose';
 import { enableBrainFunction } from './lib/brain';
 import { trpcServer } from '@hono/trpc-server';
 import { agentsMiddleware } from 'hono-agents';
-import { ZeroMCP } from './routes/agent/mcp';
+import { SkippyMCP } from './routes/agent/mcp';
 import { publicRouter } from './routes/auth';
 import { WorkflowRunner } from './pipelines';
 import { autumnApi } from './routes/autumn';
 import { initTracing } from './lib/tracing';
-import { env, type ZeroEnv } from './env';
+import { env, type SkippyEnv } from './env';
 import type { HonoContext } from './ctx';
 import { createDb, type DB } from './db';
 import { createAuth } from './lib/auth';
@@ -57,7 +57,7 @@ const SENTRY_PROJECT_IDS = new Set(['4509328795303936']);
 
 export class DbRpcDO extends RpcTarget {
   constructor(
-    private mainDo: ZeroDB,
+    private mainDo: SkippyDB,
     private userId: string,
   ) {
     super();
@@ -202,7 +202,7 @@ export class DbRpcDO extends RpcTarget {
   }
 }
 
-class ZeroDB extends DurableObject<ZeroEnv> {
+class SkippyDB extends DurableObject<SkippyEnv> {
   db: DB = createDb(this.env.HYPERDRIVE.connectionString).db;
 
   async setMetaData(userId: string) {
@@ -642,7 +642,7 @@ const api = new Hono<HonoContext>()
           const userId = payload.sub;
 
           if (userId) {
-            const db = await getZeroDB(userId);
+            const db = await getSkippyDB(userId);
             const user = await db.findUser();
             c.set('sessionUser', user);
 
@@ -755,7 +755,7 @@ const app = new Hono<HonoContext>()
       },
       credentials: true,
       allowHeaders: ['Content-Type', 'Authorization'],
-      exposeHeaders: ['X-Zero-Redirect'],
+      exposeHeaders: ['X-Skippy-Redirect'],
     }),
   )
   .get('.well-known/oauth-authorization-server', async (c) => {
@@ -779,7 +779,7 @@ const app = new Hono<HonoContext>()
       ctx.props = {
         userId: session?.userId,
       };
-      return ZeroMCP.serveSSE('/sse', { binding: 'ZERO_MCP' }).fetch(request, env, ctx);
+      return SkippyMCP.serveSSE('/sse', { binding: 'ZERO_MCP' }).fetch(request, env, ctx);
     },
     { replaceRequest: false },
   )
@@ -810,7 +810,7 @@ const app = new Hono<HonoContext>()
       ctx.props = {
         userId: session?.userId,
       };
-      return ZeroMCP.serve('/mcp', { binding: 'ZERO_MCP' }).fetch(request, env, ctx);
+      return SkippyMCP.serve('/mcp', { binding: 'ZERO_MCP' }).fetch(request, env, ctx);
     },
     { replaceRequest: false },
   )
@@ -827,7 +827,7 @@ const app = new Hono<HonoContext>()
       },
     }),
   )
-  .get('/health', (c) => c.json({ message: 'Zero Server is Up!' }))
+  .get('/health', (c) => c.json({ message: 'Skippy Server is Up!' }))
   .get('/', (c) => c.redirect(`${env.VITE_PUBLIC_APP_URL}`))
   .post('/monitoring/sentry', async (c) => {
     try {
@@ -929,12 +929,12 @@ const app = new Hono<HonoContext>()
     }
   });
 const handler = {
-  async fetch(request: Request, env: ZeroEnv, ctx: ExecutionContext): Promise<Response> {
+  async fetch(request: Request, env: SkippyEnv, ctx: ExecutionContext): Promise<Response> {
     return app.fetch(request, env, ctx);
   },
 };
 
-// const config: ResolveConfigFn = (env: ZeroEnv) => {
+// const config: ResolveConfigFn = (env: SkippyEnv) => {
 //   return {
 //     exporter: {
 //       url: env.OTEL_EXPORTER_OTLP_ENDPOINT || 'https://api.axiom.co/v1/traces',
@@ -954,7 +954,7 @@ const handler = {
 //   };
 // };
 
-export default class Entry extends WorkerEntrypoint<ZeroEnv> {
+export default class Entry extends WorkerEntrypoint<SkippyEnv> {
   async fetch(request: Request): Promise<Response> {
     return handler.fetch(request, this.env, this.ctx);
   }
@@ -1005,7 +1005,7 @@ export default class Entry extends WorkerEntrypoint<ZeroEnv> {
               payload = JSON.parse(stored);
             }
 
-            const agent = await getZeroAgent(connectionId, this.ctx);
+            const agent = await getSkippyAgent(connectionId, this.ctx);
             try {
               if (Array.isArray((payload as any).attachments)) {
                 const attachments = (payload as any).attachments;
@@ -1205,7 +1205,7 @@ export default class Entry extends WorkerEntrypoint<ZeroEnv> {
     // await Promise.all(
     //   Object.entries(unsnoozeMap).map(async ([connectionId, { threadIds, keyNames }]) => {
     //     try {
-    //       const { stub: agent } = await getZeroAgent(connectionId, this.ctx);
+    //       const { stub: agent } = await getSkippyAgent(connectionId, this.ctx);
     //       await agent.queue('unsnoozeThreadsHandler', { connectionId, threadIds, keyNames });
     //     } catch (error) {
     //       console.error('Failed to enqueue unsnooze tasks', { connectionId, threadIds, error });
@@ -1248,10 +1248,10 @@ export default class Entry extends WorkerEntrypoint<ZeroEnv> {
 }
 
 export {
-  ZeroAgent,
-  ZeroMCP,
-  ZeroDB,
-  ZeroDriver,
+  SkippyAgent,
+  SkippyMCP,
+  SkippyDB,
+  SkippyDriver,
   ThinkingMCP,
   WorkflowRunner,
   ThreadSyncWorker,

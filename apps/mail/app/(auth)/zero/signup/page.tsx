@@ -12,7 +12,7 @@ const formSchema = z.object({
   password: z.string().min(6, { message: 'Password must be at least 6 characters' }),
 });
 
-export default function SignupZero() {
+export default function SignupSkippy() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -37,7 +37,7 @@ export default function SignupZero() {
     <div className="flex h-full min-h-screen w-full items-center justify-center bg-black">
       <div className="animate-in slide-in-from-bottom-4 w-full max-w-md px-6 py-8 duration-500">
         <div className="mb-4 text-center">
-          <h1 className="mb-2 text-4xl font-bold text-white">Signup with Zero</h1>
+          <h1 className="mb-2 text-4xl font-bold text-white">Signup with Skippy</h1>
           <p className="text-muted-foreground">Enter your email below to signup to your account</p>
         </div>
 

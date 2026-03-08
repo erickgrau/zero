@@ -79,7 +79,7 @@ export const WelcomeEmail = ({ name }: EmailProps) => {
             <Heading style={h1}>Welcome to Mail0 👋</Heading>
             <Text style={text}>Hey {name ? name : 'there'},</Text>
             <Text style={text}>
-              I'm Nizzy, founder of Mail0 (aka Zero)
+              I'm Nizzy, founder of Mail0 (aka Skippy)
             </Text>
             <Text style={text}>
               If you've ever screamed into the void trying to find that one email thread from 6 months ago, 

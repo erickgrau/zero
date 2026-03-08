@@ -1,10 +1,11 @@
 import { getCurrentDateContext, GmailSearchAssistantSystemPrompt } from '../../lib/prompts';
-import { getThread, getZeroAgent } from '../../lib/server-utils';
+import { getThread, getSkippyAgent } from '../../lib/server-utils';
 import type { IGetThreadResponse } from '../../lib/driver/types';
 import { composeEmail } from '../../trpc/routes/ai/compose';
 import { perplexity } from '@ai-sdk/perplexity';
 import { colors } from '../../lib/prompts';
 import { openai } from '@ai-sdk/openai';
+import { getModel } from '../../lib/llm-provider';
 import { generateText, tool } from 'ai';
 import { Tools } from '../../types';
 import { env } from '../../env';
@@ -41,11 +42,11 @@ export const getEmbeddingVector = async (
   }
 };
 
-// const askZeroMailbox = (connectionId: string) =>
+// const askSkippyMailbox = (connectionId: string) =>
 //   tool({
-//     description: 'Ask Zero a question about the mailbox',
+//     description: 'Ask Skippy a question about the mailbox',
 //     parameters: z.object({
-//       question: z.string().describe('The question to ask Zero'),
+//       question: z.string().describe('The question to ask Skippy'),
 //       topK: z.number().describe('The number of results to return').max(9).min(1).default(3),
 //     }),
 //     execute: async ({ question, topK = 3 }) => {
@@ -74,12 +75,12 @@ export const getEmbeddingVector = async (
 //     },
 //   });
 
-// const askZeroThread = (connectionId: string) =>
+// const askSkippyThread = (connectionId: string) =>
 //   tool({
-//     description: 'Ask Zero a question about a specific thread',
+//     description: 'Ask Skippy a question about a specific thread',
 //     parameters: z.object({
-//       threadId: z.string().describe('The ID of the thread to ask Zero about'),
-//       question: z.string().describe('The question to ask Zero'),
+//       threadId: z.string().describe('The ID of the thread to ask Skippy about'),
+//       question: z.string().describe('The question to ask Skippy'),
 //     }),
 //     execute: async ({ threadId, question }) => {
 //       const response = await env.VECTORIZE.getByIds([threadId]);
@@ -220,7 +221,7 @@ const markAsRead = (connectionId: string) =>
       threadIds: z.array(z.string()).describe('The IDs of the threads to mark as read'),
     }),
     execute: async ({ threadIds }) => {
-      const { stub: agent } = await getZeroAgent(connectionId);
+      const { stub: agent } = await getSkippyAgent(connectionId);
       await Promise.all(
         threadIds.map((threadId) => agent.modifyThreadLabelsInDB(threadId, [], ['UNREAD'])),
       );
@@ -235,7 +236,7 @@ const markAsUnread = (connectionId: string) =>
       threadIds: z.array(z.string()).describe('The IDs of the threads to mark as unread'),
     }),
     execute: async ({ threadIds }) => {
-      const { stub: agent } = await getZeroAgent(connectionId);
+      const { stub: agent } = await getSkippyAgent(connectionId);
       await Promise.all(
         threadIds.map((threadId) => agent.modifyThreadLabelsInDB(threadId, ['UNREAD'], [])),
       );
@@ -260,7 +261,7 @@ const modifyLabels = (connectionId: string) =>
       }),
     }),
     execute: async ({ threadIds, options }) => {
-      const { stub: agent } = await getZeroAgent(connectionId);
+      const { stub: agent } = await getSkippyAgent(connectionId);
       await Promise.all(
         threadIds.map((threadId) =>
           agent.modifyThreadLabelsInDB(threadId, options.addLabels, options.removeLabels),
@@ -275,7 +276,7 @@ const getUserLabels = (connectionId: string) =>
     description: 'Get all user labels',
     parameters: z.object({}),
     execute: async () => {
-      const { stub: agent } = await getZeroAgent(connectionId);
+      const { stub: agent } = await getSkippyAgent(connectionId);
       return await agent.getUserLabels();
     },
   });
@@ -314,7 +315,7 @@ const sendEmail = (connectionId: string) =>
     }),
     execute: async (data) => {
       try {
-        const { stub: agent } = await getZeroAgent(connectionId);
+        const { stub: agent } = await getSkippyAgent(connectionId);
         const { draftId, ...mail } = data;
 
         if (draftId) {
@@ -360,7 +361,7 @@ const createLabel = (connectionId: string) =>
         }),
     }),
     execute: async ({ name, backgroundColor, textColor }) => {
-      const { stub: agent } = await getZeroAgent(connectionId);
+      const { stub: agent } = await getSkippyAgent(connectionId);
       await agent.createLabel({ name, color: { backgroundColor, textColor } });
       return { name, backgroundColor, textColor, success: true };
     },
@@ -373,7 +374,7 @@ const bulkDelete = (connectionId: string) =>
       threadIds: z.array(z.string()).describe('Array of email IDs to move to trash'),
     }),
     execute: async ({ threadIds }) => {
-      const { stub: agent } = await getZeroAgent(connectionId);
+      const { stub: agent } = await getSkippyAgent(connectionId);
       await Promise.all(
         threadIds.map((threadId) => agent.modifyThreadLabelsInDB(threadId, ['TRASH'], [])),
       );
@@ -388,7 +389,7 @@ const bulkArchive = (connectionId: string) =>
       threadIds: z.array(z.string()).describe('Array of email IDs to move to archive'),
     }),
     execute: async ({ threadIds }) => {
-      const { stub: agent } = await getZeroAgent(connectionId);
+      const { stub: agent } = await getSkippyAgent(connectionId);
       await Promise.all(
         threadIds.map((threadId) => agent.modifyThreadLabelsInDB(threadId, [], ['INBOX'])),
       );
@@ -403,7 +404,7 @@ const deleteLabel = (connectionId: string) =>
       id: z.string().describe('The ID of the label to delete'),
     }),
     execute: async ({ id }) => {
-      const { stub: agent } = await getZeroAgent(connectionId);
+      const { stub: agent } = await getSkippyAgent(connectionId);
       await agent.deleteLabel(id);
       return { id, success: true };
     },
@@ -419,7 +420,7 @@ const buildGmailSearchQuery = () =>
       console.log('[DEBUG] buildGmailSearchQuery', params);
 
       const result = await generateText({
-        model: openai(env.OPENAI_MODEL || 'gpt-4o'),
+        model: getModel(),
         system: GmailSearchAssistantSystemPrompt(),
         prompt: params.query,
       });
@@ -505,7 +506,7 @@ export const tools = async (connectionId: string, ragEffect: boolean = false) =>
         folder: z.string().describe('The folder to search the inbox for').default('inbox'),
       }),
       execute: async ({ query, maxResults, folder }) => {
-        const { stub: agent } = await getZeroAgent(connectionId);
+        const { stub: agent } = await getSkippyAgent(connectionId);
         const res = await agent.searchThreads({ query, maxResults, folder });
         return res.threadIds;
       },

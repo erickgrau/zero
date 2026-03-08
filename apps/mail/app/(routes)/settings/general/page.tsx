@@ -22,7 +22,7 @@ import { useEmailAliases } from '@/hooks/use-email-aliases';
 import { Globe, Clock, Mail, InfoIcon } from 'lucide-react';
 import { getLocale, setLocale } from '@/paraglide/runtime';
 import { useState, useEffect, useMemo, memo } from 'react';
-import { userSettingsSchema } from '@zero/server/schemas';
+import { userSettingsSchema } from '@skippy/server/schemas';
 import { locales } from '@/project.inlang/settings.json';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -272,7 +272,7 @@ export default function GeneralPage() {
     [aliases],
   );
 
-  const renderZeroSignatureField = useCallback(
+  const renderSkippySignatureField = useCallback(
     ({ field }: { field: any }) => (
       <FormItem className="flex max-w-xl flex-row items-center justify-between rounded-lg border px-4 py-2">
         <div className="space-y-0.5">
@@ -355,7 +355,7 @@ export default function GeneralPage() {
             <FormField
               control={form.control}
               name="zeroSignature"
-              render={renderZeroSignatureField}
+              render={renderSkippySignatureField}
             />
             <FormField
               control={form.control}

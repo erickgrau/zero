@@ -66,7 +66,7 @@
     },
     "commandPalette": {
       "title": "Bảng lệnh",
-      "description": "Điều hướng nhanh và thao tác cho Zero Email",
+      "description": "Điều hướng nhanh và thao tác cho Skippy Email",
       "placeholder": "Nhập lệnh hoặc tìm kiếm...",
       "noResults": "Không tìm thấy kết quả nào",
       "groups": {
@@ -466,8 +466,8 @@
         "customPromptPlaceholder": "Nhập lệnh tùy chỉnh của bạn cho AI...",
         "customPromptDescription": "Tùy chỉnh cách AI viết các trả lời email của bạn. Điều này sẽ được thêm vào lệnh cơ bản.",
         "noResultsFound": "Không tìm thấy kết quả nào",
-        "zeroSignature": "Chữ ký Zero",
-        "zeroSignatureDescription": "Thêm chữ ký Zero vào email của bạn.",
+        "zeroSignature": "Chữ ký Skippy",
+        "zeroSignatureDescription": "Thêm chữ ký Skippy vào email của bạn.",
         "undoSendEnabled": "Hoàn tác gửi",
         "undoSendEnabledDescription": "Cho phép hủy email trong vòng 30 giây sau khi gửi.",
         "defaultEmailAlias": "Bí danh email mặc định",
@@ -480,7 +480,7 @@
       },
       "connections": {
         "title": "Kết nối email",
-        "description": "Kết nối tài khoản email của bạn với Zero.",
+        "description": "Kết nối tài khoản email của bạn với Skippy.",
         "disconnectTitle": "Ngắt kết nối tài khoản email",
         "disconnectDescription": "Bạn có chắc chắn muốn ngắt kết nối email này không?",
         "cancel": "Hủy",
@@ -668,6 +668,6 @@
   "errorMessages": {
     "required_scopes_missing": "Chúng tôi thiếu các quyền cần thiết để tạo trải nghiệm đầy đủ cho bạn. Vui lòng đăng nhập lại và cho phép quyền truy cập được yêu cầu.",
     "early_access_required": "Cần có quyền truy cập sớm để đăng nhập",
-    "unauthorized": "Zero không thể tải dữ liệu của bạn từ nhà cung cấp bên thứ 3. Vui lòng thử lại."
+    "unauthorized": "Skippy không thể tải dữ liệu của bạn từ nhà cung cấp bên thứ 3. Vui lòng thử lại."
   }
 }

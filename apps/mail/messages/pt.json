@@ -466,8 +466,8 @@
         "customPromptPlaceholder": "Digite seu prompt personalizado para a IA...",
         "customPromptDescription": "Personalize como a IA escreve suas respostas de email. Isto será adicionado ao prompt base.",
         "noResultsFound": "Nenhum resultado encontrado",
-        "zeroSignature": "Assinatura Zero",
-        "zeroSignatureDescription": "Adicionar uma assinatura Zero aos seus e-mails.",
+        "zeroSignature": "Assinatura Skippy",
+        "zeroSignatureDescription": "Adicionar uma assinatura Skippy aos seus e-mails.",
         "undoSendEnabled": "Desfazer envio",
         "undoSendEnabledDescription": "Permitir cancelar emails dentro de 30 segundos após o envio.",
         "defaultEmailAlias": "Alias de Email Padrão",
@@ -480,7 +480,7 @@
       },
       "connections": {
         "title": "Conexões de E-mail",
-        "description": "Conecte suas contas de email ao Zero.",
+        "description": "Conecte suas contas de email ao Skippy.",
         "disconnectTitle": "Desconectar conta de e-mail",
         "disconnectDescription": "Tem certeza de que deseja desconectar este e-mail?",
         "cancel": "Cancelar",
@@ -668,6 +668,6 @@
   "errorMessages": {
     "required_scopes_missing": "Estamos sem as permissões necessárias para criar sua experiência completa. Por favor, faça login novamente e permita o acesso solicitado.",
     "early_access_required": "É necessário acesso antecipado para fazer login",
-    "unauthorized": "O Zero não conseguiu carregar seus dados do provedor terceirizado. Por favor, tente novamente."
+    "unauthorized": "O Skippy não conseguiu carregar seus dados do provedor terceirizado. Por favor, tente novamente."
   }
 }

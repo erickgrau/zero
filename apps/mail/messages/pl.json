@@ -466,8 +466,8 @@
         "customPromptPlaceholder": "Wprowadź własne polecenie dla AI...",
         "customPromptDescription": "Dostosuj sposób, w jaki AI pisze odpowiedzi na Twoje e-maile. Zostanie to dodane do podstawowego polecenia.",
         "noResultsFound": "Nie znaleziono wyników",
-        "zeroSignature": "Podpis Zero",
-        "zeroSignatureDescription": "Dodaj podpis Zero do swoich e-maili.",
+        "zeroSignature": "Podpis Skippy",
+        "zeroSignatureDescription": "Dodaj podpis Skippy do swoich e-maili.",
         "undoSendEnabled": "Cofnij wysyłanie",
         "undoSendEnabledDescription": "Pozwala anulować wysyłanie e-maili w ciągu 30 sekund od ich wysłania.",
         "defaultEmailAlias": "Domyślny alias e-mail",
@@ -480,7 +480,7 @@
       },
       "connections": {
         "title": "Połączenia e-mail",
-        "description": "Połącz swoje konta e-mail z Zero.",
+        "description": "Połącz swoje konta e-mail z Skippy.",
         "disconnectTitle": "Odłącz konto e-mail",
         "disconnectDescription": "Czy na pewno chcesz odłączyć ten e-mail?",
         "cancel": "Anuluj",
@@ -668,6 +668,6 @@
   "errorMessages": {
     "required_scopes_missing": "Brakuje nam uprawnień potrzebnych do zapewnienia pełnego doświadczenia. Zaloguj się ponownie i zaakceptuj wymagane uprawnienia.",
     "early_access_required": "Wymagany jest wczesny dostęp, aby się zalogować",
-    "unauthorized": "Zero nie mógł załadować Twoich danych od zewnętrznego dostawcy. Spróbuj ponownie."
+    "unauthorized": "Skippy nie mógł załadować Twoich danych od zewnętrznego dostawcy. Spróbuj ponownie."
   }
 }

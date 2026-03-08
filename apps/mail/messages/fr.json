@@ -466,8 +466,8 @@
         "customPromptPlaceholder": "Entrez votre requête personnalisée pour l'IA...",
         "customPromptDescription": "Personnalisez la façon dont l'IA écrit vos réponses. Cela sera ajouté à la requête par défaut.",
         "noResultsFound": "Aucun résultat trouvé",
-        "zeroSignature": "Signature Zero",
-        "zeroSignatureDescription": "Ajouter une signature Zero à vos courriels.",
+        "zeroSignature": "Signature Skippy",
+        "zeroSignatureDescription": "Ajouter une signature Skippy à vos courriels.",
         "undoSendEnabled": "Annuler l'envoi",
         "undoSendEnabledDescription": "Permettre d'annuler les emails dans les 30 secondes suivant l'envoi.",
         "defaultEmailAlias": "Alias e-mail par défaut",
@@ -480,7 +480,7 @@
       },
       "connections": {
         "title": "Connexions de courriels",
-        "description": "Connectez vos adresses courriel à Zero.",
+        "description": "Connectez vos adresses courriel à Skippy.",
         "disconnectTitle": "Déconnecter l'adresse courriel",
         "disconnectDescription": "Êtes-vous sûr de vouloir déconnecter ce courriel?",
         "cancel": "Annuler",
@@ -668,6 +668,6 @@
   "errorMessages": {
     "required_scopes_missing": "Il nous manque les autorisations nécessaires pour créer votre expérience complète. Veuillez vous reconnecter et autoriser l'accès demandé.",
     "early_access_required": "L'accès anticipé est requis pour se connecter",
-    "unauthorized": "Zero n'a pas pu charger vos données depuis le fournisseur tiers. Veuillez réessayer."
+    "unauthorized": "Skippy n'a pas pu charger vos données depuis le fournisseur tiers. Veuillez réessayer."
   }
 }

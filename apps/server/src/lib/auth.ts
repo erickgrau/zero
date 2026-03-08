@@ -11,7 +11,7 @@ import { createAuthMiddleware, phoneNumber, jwt, bearer, mcp } from 'better-auth
 import { type Account, betterAuth, type BetterAuthOptions } from 'better-auth';
 import { getBrowserTimezone, isValidTimezone } from './timezones';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
-import { getZeroDB, resetConnection } from './server-utils';
+import { getSkippyDB, resetConnection } from './server-utils';
 import { getSocialProviders } from './auth-providers';
 import { redis, resend, twilio } from './services';
 import { dubAnalytics } from '@dub/better-auth';
@@ -136,7 +136,7 @@ const connectionHandlerHook = async (account: Account) => {
     expiresAt: new Date(Date.now() + (account.accessTokenExpiresAt?.getTime() || 3600000)),
   };
 
-  const db = await getZeroDB(account.userId);
+  const db = await getSkippyDB(account.userId);
   const [result] = await db.createConnection(
     account.providerId as EProviders,
     userInfo.address,
@@ -203,7 +203,7 @@ export const createAuth = () => {
         },
         beforeDelete: async (user, request) => {
           if (!request) throw new APIError('BAD_REQUEST', { message: 'Request object is missing' });
-          const db = await getZeroDB(user.id);
+          const db = await getSkippyDB(user.id);
           const connections = await db.findManyConnections();
           const autumn = new Autumn({ secretKey: env.AUTUMN_SECRET_KEY });
           try {
@@ -301,7 +301,7 @@ export const createAuth = () => {
           const newSession = ctx.context.newSession;
           if (newSession) {
             // Check if user already has settings
-            const db = await getZeroDB(newSession.user.id);
+            const db = await getSkippyDB(newSession.user.id);
             const existingSettings = await db.findUserSettings();
 
             if (!existingSettings) {

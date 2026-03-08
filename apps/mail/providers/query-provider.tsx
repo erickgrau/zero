@@ -7,7 +7,7 @@ import { QueryCache, QueryClient, hashKey, type InfiniteData } from '@tanstack/r
 import { createTRPCContext } from '@trpc/tanstack-react-query';
 import { createTRPCClient, httpBatchLink } from '@trpc/client';
 import { useMemo, type PropsWithChildren } from 'react';
-import type { AppRouter } from '@zero/server/trpc';
+import type { AppRouter } from '@skippy/server/trpc';
 import { CACHE_BURST_KEY } from '@/lib/constants';
 import { signOut } from '@/lib/auth-client';
 import { get, set, del } from 'idb-keyval';
@@ -96,10 +96,10 @@ export const trpcClient = createTRPCClient<AppRouter>({
       fetch: (url, options) =>
         fetch(url, { ...options, credentials: 'include' }).then((res) => {
           const currentPath = new URL(window.location.href).pathname;
-          const redirectPath = res.headers.get('X-Zero-Redirect');
+          const redirectPath = res.headers.get('X-Skippy-Redirect');
           if (!!redirectPath && redirectPath !== currentPath) {
             window.location.href = redirectPath;
-            res.headers.delete('X-Zero-Redirect');
+            res.headers.delete('X-Skippy-Redirect');
           }
           return res;
         }),

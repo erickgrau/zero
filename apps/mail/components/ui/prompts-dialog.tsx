@@ -135,9 +135,9 @@ export function PromptsDialog() {
         <DialogContent className="max-w-(--breakpoint-lg)" showOverlay={true}>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              ZeroAI System Prompts{' '}
+              SkippyAI System Prompts{' '}
               <Link
-                to={'https://github.com/Mail-0/Zero.git'}
+                to={'https://github.com/Mail-0/Skippy.git'}
                 target="_blank"
                 className="flex items-center gap-1 text-xs underline"
               >

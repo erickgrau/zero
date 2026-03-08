@@ -143,7 +143,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <div className="flex-1 space-y-1">
                   <div className="flex items-center gap-2">
                     <h3 className="text-sm font-semibold text-black dark:text-white/90">
-                      Get Zero Pro
+                      Get Skippy Pro
                     </h3>
                   </div>
                   <p className="text-[13px] leading-snug text-black dark:text-white/50">

@@ -155,7 +155,7 @@ export default function Footer() {
                   rel="noreferrer"
                 >
                   <div className="justify-start self-stretch text-sm md:text-base leading-none text-white opacity-80 transition-opacity hover:opacity-100">
-                    Chat with Zero
+                    Chat with Skippy
                   </div>
                 </a>
                 <a
@@ -165,7 +165,7 @@ export default function Footer() {
                   rel="noreferrer"
                 >
                   <div className="justify-start self-stretch text-sm md:text-base leading-none text-white opacity-80 transition-opacity hover:opacity-100">
-                    Zero AI
+                    Skippy AI
                   </div>
                 </a>
                 <a
@@ -198,7 +198,7 @@ export default function Footer() {
                 <a
                   target="_blank"
                   rel="noreferrer"
-                  href="https://github.com/Mail-0/Zero"
+                  href="https://github.com/Mail-0/Skippy"
                   className="w-full"
                 >
                   <div className="justify-start self-stretch text-sm md:text-base font-normal leading-none text-white opacity-80 transition-opacity hover:opacity-100">
@@ -213,7 +213,7 @@ export default function Footer() {
         <div className="flex flex-col items-start justify-start gap-6 self-stretch">
           <div className="inline-flex items-center justify-between self-stretch flex-col-reverse md:flex-row gap-3">
             <div className="justify-start text-xs font-medium leading-tight text-white opacity-80 sm:text-sm">
-              © 2025 Zero Email Inc, All Rights Reserved
+              © 2025 Skippy Email Inc, All Rights Reserved
             </div>
             <div className="flex items-center gap-4">
               <Link

@@ -1,5 +1,5 @@
 {
-  "name": "@zero/tsconfig",
+  "name": "@skippy/tsconfig",
   "private": true,
   "exports": {
     "./base": "./base.json"

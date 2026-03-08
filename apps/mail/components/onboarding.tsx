@@ -5,13 +5,13 @@ import confetti from 'canvas-confetti';
 
 const steps = [
   {
-    title: 'Welcome to Zero Email!',
+    title: 'Welcome to Skippy Email!',
     description: 'Your new intelligent email experience starts here.',
     video: 'https://assets.0.email/get-started.png',
   },
   {
     title: 'Chat with your inbox',
-    description: 'Zero allows you to chat with your inbox, and take actions on your behalf.',
+    description: 'Skippy allows you to chat with your inbox, and take actions on your behalf.',
     video: 'https://assets.0.email/step2.gif',
   },
   {
@@ -21,7 +21,7 @@ const steps = [
   },
   {
     title: 'Label your emails',
-    description: 'Zero helps you label your emails to focus on what matters.',
+    description: 'Skippy helps you label your emails to focus on what matters.',
     video: 'https://assets.0.email/step3.gif',
   },
   {

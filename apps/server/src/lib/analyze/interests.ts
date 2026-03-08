@@ -1,5 +1,5 @@
 /*
- * Licensed to Zero Email Inc. under one or more contributor license agreements.
+ * Licensed to Skippy Email Inc. under one or more contributor license agreements.
  * You may not use this file except in compliance with the Apache License, Version 2.0 (the "License").
  * You may obtain a copy of the License at
  *
@@ -11,13 +11,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Reuse or distribution of this file requires a license from Zero Email Inc.
+ * Reuse or distribution of this file requires a license from Skippy Email Inc.
  */
 
 import { generateObject } from 'ai';
-import { openai } from '@ai-sdk/openai';
+import { getMiniModel } from '../llm-provider';
 import { z } from 'zod';
-import { env } from 'cloudflare:workers';
+import { env } from '../../env';
 
 export interface GenerateTopicsOptions {
   sampleSize?: number;
@@ -35,6 +35,7 @@ export interface UserTopic {
  */
 export async function generateWhatUserCaresAbout(
   subjects: string[],
+  userId: string,
   opts: GenerateTopicsOptions = {}
 ): Promise<UserTopic[]> {
   if (!subjects.length) {
@@ -78,7 +79,7 @@ export async function generateWhatUserCaresAbout(
     })).min(1).max(6),
   });
 
-  const existingLabelsText = opts.existingLabels?.length 
+  const existingLabelsText = opts.existingLabels?.length
     ? `\n\nExisting labels in this account (avoid duplicates or very similar topics):\n${opts.existingLabels.map(l => l.name).join(', ')}`
     : '';
 
@@ -91,7 +92,7 @@ ${sample.join('\n')}`;
 
   try {
     const { object } = await generateObject({
-      model: openai(env.OPENAI_MODEL || 'gpt-4o-mini'),
+      model: await getMiniModel({ userId }),
       schema,
       system: systemPrompt,
       prompt: userPrompt,
@@ -99,7 +100,7 @@ ${sample.join('\n')}`;
       temperature: 0.2,
     });
 
-    return object.topics;
+    return object.topics as UserTopic[];
   } catch (error) {
     console.error('Failed to generate user topics:', error);
     return [];

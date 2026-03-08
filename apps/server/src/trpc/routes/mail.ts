@@ -1,8 +1,8 @@
 import {
   forceReSync,
   getThreadsFromDB,
-  getZeroAgent,
-  getZeroDB,
+  getSkippyAgent,
+  getSkippyDB,
   getThread,
   modifyThreadLabelsInDB,
   deleteAllSpam,
@@ -51,7 +51,7 @@ export const mailRouter = router({
     .query(async ({ ctx, input }) => {
       const { activeConnection } = ctx;
       const executionCtx = getContext<HonoContext>().executionCtx;
-      const { stub: agent } = await getZeroAgent(activeConnection.id, executionCtx);
+      const { stub: agent } = await getSkippyAgent(activeConnection.id, executionCtx);
 
       return await agent.suggestRecipients(input.query, input.limit);
     }),
@@ -86,7 +86,7 @@ export const mailRouter = router({
       const { folder, maxResults, cursor, q, labelIds } = input;
       const { activeConnection } = ctx;
       const executionCtx = getContext<HonoContext>().executionCtx;
-      const { stub: agent } = await getZeroAgent(activeConnection.id, executionCtx);
+      const { stub: agent } = await getSkippyAgent(activeConnection.id, executionCtx);
 
       console.debug('[listThreads] input:', { folder, maxResults, cursor, q, labelIds });
 
@@ -178,7 +178,7 @@ export const mailRouter = router({
             expirationTtl: 60,
           });
 
-          getZeroAgent(activeConnection.id, executionCtx)
+          getSkippyAgent(activeConnection.id, executionCtx)
             .then((_agent) => {
               _agent.stub.forceReSync().catch((error) => {
                 console.error('[listThreads] Async resync failed:', error);
@@ -247,7 +247,7 @@ export const mailRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { activeConnection } = ctx;
       const executionCtx = getContext<HonoContext>().executionCtx;
-      const { stub: agent } = await getZeroAgent(activeConnection.id, executionCtx);
+      const { stub: agent } = await getSkippyAgent(activeConnection.id, executionCtx);
       const { threadId, addLabels, removeLabels } = input;
 
       console.log(`Server: updateThreadLabels called for thread ${threadId}`);
@@ -279,7 +279,7 @@ export const mailRouter = router({
     .mutation(async ({ input, ctx }) => {
       const { activeConnection } = ctx;
       const executionCtx = getContext<HonoContext>().executionCtx;
-      const { stub: agent } = await getZeroAgent(activeConnection.id, executionCtx);
+      const { stub: agent } = await getSkippyAgent(activeConnection.id, executionCtx);
       const { threadIds } = await agent.normalizeIds(input.ids);
 
       if (!threadIds.length) {
@@ -333,7 +333,7 @@ export const mailRouter = router({
     .mutation(async ({ input, ctx }) => {
       const { activeConnection } = ctx;
       const executionCtx = getContext<HonoContext>().executionCtx;
-      const { stub: agent } = await getZeroAgent(activeConnection.id, executionCtx);
+      const { stub: agent } = await getSkippyAgent(activeConnection.id, executionCtx);
       const { threadIds } = await agent.normalizeIds(input.ids);
 
       if (!threadIds.length) {
@@ -475,13 +475,13 @@ export const mailRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { activeConnection, sessionUser } = ctx;
       const executionCtx = getContext<HonoContext>().executionCtx;
-      const agent = await getZeroAgent(activeConnection.id, executionCtx);
+      const agent = await getSkippyAgent(activeConnection.id, executionCtx);
 
       const { draftId, scheduleAt, attachments, ...mail } = input as typeof input & {
         scheduleAt?: string;
       };
 
-      const db = await getZeroDB(sessionUser.id);
+      const db = await getSkippyDB(sessionUser.id);
       const userSettings = await db.findUserSettings();
       const undoSendEnabled = userSettings?.settings?.undoSendEnabled ?? false;
       const shouldSchedule = !!scheduleAt || undoSendEnabled;
@@ -681,7 +681,7 @@ export const mailRouter = router({
     .mutation(async ({ input, ctx }) => {
       const { activeConnection } = ctx;
       const executionCtx = getContext<HonoContext>().executionCtx;
-      const { exec, stub } = await getZeroAgent(activeConnection.id, executionCtx);
+      const { exec, stub } = await getSkippyAgent(activeConnection.id, executionCtx);
       exec(`DELETE FROM threads WHERE thread_id = ?`, input.id);
       await stub.reloadFolder('bin');
       return true;
@@ -731,7 +731,7 @@ export const mailRouter = router({
   getEmailAliases: activeDriverProcedure.query(async ({ ctx }) => {
     const { activeConnection } = ctx;
     const executionCtx = getContext<HonoContext>().executionCtx;
-    const { stub: agent } = await getZeroAgent(activeConnection.id, executionCtx);
+    const { stub: agent } = await getSkippyAgent(activeConnection.id, executionCtx);
     return agent.getEmailAliases();
   }),
   snoozeThreads: activeDriverProcedure
@@ -799,7 +799,7 @@ export const mailRouter = router({
     .query(async ({ ctx, input }) => {
       const { activeConnection } = ctx;
       const executionCtx = getContext<HonoContext>().executionCtx;
-      const { stub: agent } = await getZeroAgent(activeConnection.id, executionCtx);
+      const { stub: agent } = await getSkippyAgent(activeConnection.id, executionCtx);
       return agent.getMessageAttachments(input.messageId) as Promise<
         {
           filename: string;
@@ -850,7 +850,7 @@ export const mailRouter = router({
     )
     .query(async ({ input, ctx }) => {
       const { activeConnection } = ctx;
-      const { stub: agent } = await getZeroAgent(activeConnection.id);
+      const { stub: agent } = await getSkippyAgent(activeConnection.id);
       return agent.getRawEmail(input.id);
     }),
   verifyEmail: activeDriverProcedure
@@ -862,7 +862,7 @@ export const mailRouter = router({
     .query(async ({ input, ctx }) => {
       try {
         const { activeConnection } = ctx;
-        const { stub: agent } = await getZeroAgent(activeConnection.id);
+        const { stub: agent } = await getSkippyAgent(activeConnection.id);
 
         console.log(`[VERIFY_EMAIL] Getting raw email for message ID: ${input.id}`);
         const rawEmail = await agent.getRawEmail(input.id);

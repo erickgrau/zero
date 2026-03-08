@@ -120,7 +120,7 @@ import { useAtom } from 'jotai';
 //     }
 //     await updateLabels({ labels: updatedLabels });
 //     setOpen(false);
-//     toast.success('Labels updated successfully, Zero will start using them.');
+//     toast.success('Labels updated successfully, Skippy will start using them.');
 //   };
 
 //   const handleEnableBrain = useCallback(async () => {
@@ -194,7 +194,7 @@ import { useAtom } from 'jotai';
 //             </button>
 //           </div>
 //           <DialogDescription className="mt-2">
-//             Configure the labels that Zero uses to automatically organize your emails.
+//             Configure the labels that Skippy uses to automatically organize your emails.
 //           </DialogDescription>
 //         </DialogHeader>
 

@@ -1,5 +1,5 @@
 {
-  "name": "@zero/eslint-config",
+  "name": "@skippy/eslint-config",
   "private": true,
   "type": "module",
   "exports": {

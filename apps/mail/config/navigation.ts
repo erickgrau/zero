@@ -190,6 +190,11 @@ export const navigationConfig: Record<string, NavConfig> = {
             icon: Tabs,
             shortcut: '?',
           },
+          {
+            title: 'Credentials',
+            url: '/settings/credentials',
+            icon: LockIcon,
+          },
           // {
           //   title: 'navigation.settings.signatures',
           //   url: '/settings/signatures',

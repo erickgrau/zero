@@ -66,7 +66,7 @@ const coreTeamMembers = [
   'dakdevs',
   'mrgsub',
 ];
-const REPOSITORY = 'Mail-0/Zero';
+const REPOSITORY = 'Mail-0/Skippy';
 
 const specialRoles: Record<
   string,

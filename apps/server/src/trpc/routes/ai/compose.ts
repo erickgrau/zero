@@ -10,7 +10,7 @@ import { getPrompt } from '../../../lib/brain';
 import { stripHtml } from 'string-strip-html';
 import { EPrompts } from '../../../types';
 import { env } from '../../../env';
-import { openai } from '@ai-sdk/openai';
+import { getModel, getMiniModel } from '../../../lib/llm-provider';
 import { generateText } from 'ai';
 import { z } from 'zod';
 
@@ -28,10 +28,11 @@ type ComposeEmailInput = {
   }>;
   username: string;
   connectionId: string;
+  userId: string;
 };
 
 export async function composeEmail(input: ComposeEmailInput) {
-  const { prompt, threadMessages = [], cc, emailSubject, to, username, connectionId } = input;
+  const { prompt, threadMessages = [], cc, emailSubject, to, username, connectionId, userId } = input;
 
   const writingStyleMatrix = await getWritingStyleMatrixForConnectionId({
     connectionId,
@@ -60,33 +61,33 @@ export async function composeEmail(input: ComposeEmailInput) {
   const messages =
     threadMessages.length > 0
       ? [
-          {
-            role: 'user' as const,
-            content: "I'm going to give you the current email thread replies one by one.",
-          } as const,
-          {
-            role: 'assistant' as const,
-            content: 'Got it. Please proceed with the thread replies.',
-          } as const,
-          ...threadUserMessages,
-          {
-            role: 'assistant' as const,
-            content: 'Got it. Please proceed with the email composition prompt.',
-          },
-        ]
+        {
+          role: 'user' as const,
+          content: "I'm going to give you the current email thread replies one by one.",
+        } as const,
+        {
+          role: 'assistant' as const,
+          content: 'Got it. Please proceed with the thread replies.',
+        } as const,
+        ...threadUserMessages,
+        {
+          role: 'assistant' as const,
+          content: 'Got it. Please proceed with the email composition prompt.',
+        },
+      ]
       : [
-          {
-            role: 'user' as const,
-            content: 'Now, I will give you the prompt to write the email.',
-          },
-          {
-            role: 'assistant' as const,
-            content: 'Ok, please continue with the email composition prompt.',
-          },
-        ];
+        {
+          role: 'user' as const,
+          content: 'Now, I will give you the prompt to write the email.',
+        },
+        {
+          role: 'assistant' as const,
+          content: 'Ok, please continue with the email composition prompt.',
+        },
+      ];
 
   const { text } = await generateText({
-    model: openai(env.OPENAI_MINI_MODEL || 'gpt-4o-mini'),
+    model: await getMiniModel({ userId }),
     messages: [
       {
         role: 'system',
@@ -137,9 +138,14 @@ export const compose = activeConnectionProcedure
     const { sessionUser, activeConnection } = ctx;
 
     const newBody = await composeEmail({
-      ...input,
+      prompt: input.prompt,
+      emailSubject: input.emailSubject,
+      to: input.to,
+      cc: input.cc,
+      threadMessages: input.threadMessages as ComposeEmailInput['threadMessages'],
       username: sessionUser.name,
       connectionId: activeConnection.id,
+      userId: sessionUser.id,
     });
 
     return { newBody };
@@ -152,14 +158,14 @@ export const generateEmailSubject = activeConnectionProcedure
     }),
   )
   .mutation(async ({ ctx, input }) => {
-    const { activeConnection } = ctx;
+    const { sessionUser, activeConnection } = ctx;
     const { message } = input;
 
     const writingStyleMatrix = await getWritingStyleMatrixForConnectionId({
       connectionId: activeConnection.id,
     });
 
-    const subject = await generateSubject(message, writingStyleMatrix?.style as WritingStyleMatrix);
+    const subject = await generateSubject(message, sessionUser.id, writingStyleMatrix?.style as WritingStyleMatrix);
 
     return {
       subject,
@@ -248,7 +254,7 @@ const EmailAssistantPrompt = ({
   return parts.join('\n\n');
 };
 
-const generateSubject = async (message: string, styleProfile?: WritingStyleMatrix | null) => {
+const generateSubject = async (message: string, userId: string, styleProfile?: WritingStyleMatrix | null) => {
   const parts: string[] = [];
 
   parts.push('# Email Subject Generation Task');
@@ -267,7 +273,7 @@ const generateSubject = async (message: string, styleProfile?: WritingStyleMatri
   );
 
   const { text } = await generateText({
-    model: openai(env.OPENAI_MODEL || 'gpt-4o'),
+    model: await getModel({ userId }),
     messages: [
       {
         role: 'system',

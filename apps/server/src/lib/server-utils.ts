@@ -16,7 +16,7 @@ const mbToBytes = (mb: number) => mb * 1024 * 1024;
 // 8GB
 const MAX_SHARD_SIZE = mbToBytes(8192);
 
-export const getZeroDB = async (userId: string) => {
+export const getSkippyDB = async (userId: string) => {
   const stub = env.ZERO_DB.get(env.ZERO_DB.idFromName(userId));
   const rpcTarget = await stub.setMetaData(userId);
   return rpcTarget;
@@ -306,7 +306,7 @@ export const modifyThreadLabelsInDB = async (
   const shard = await getShardClient(connectionId, threadResult.shardId);
   await shard.stub.modifyThreadLabelsInDB(threadId, addLabels, removeLabels);
 
-  const agent = await getZeroSocketAgent(connectionId);
+  const agent = await getSkippySocketAgent(connectionId);
   await agent.invalidateDoStateCache();
 
   await sendDoState(connectionId);
@@ -345,7 +345,7 @@ const getActiveShardId = async (connectionId: string) => {
   return newShardId;
 };
 
-export const getZeroAgent = async (connectionId: string, executionCtx?: ExecutionContext) => {
+export const getSkippyAgent = async (connectionId: string, executionCtx?: ExecutionContext) => {
   if (!executionCtx) {
     executionCtx = new MockExecutionContext();
   }
@@ -355,7 +355,7 @@ export const getZeroAgent = async (connectionId: string, executionCtx?: Executio
   return agent;
 };
 
-export const getZeroAgentFromShard = async (connectionId: string, shardId: string) => {
+export const getSkippyAgentFromShard = async (connectionId: string, shardId: string) => {
   const agent = await getShardClient(connectionId, shardId);
   return agent;
 };
@@ -377,17 +377,17 @@ export const forceReSync = async (connectionId: string) => {
 
   await deleteAllShards(registry);
 
-  const agent = await getZeroAgent(connectionId);
+  const agent = await getSkippyAgent(connectionId);
   return agent.stub.forceReSync();
 };
 
 export const reSyncThread = async (connectionId: string, threadId: string) => {
   try {
     const { shardId } = await getThread(connectionId, threadId);
-    const agent = await getZeroAgentFromShard(connectionId, shardId);
+    const agent = await getSkippyAgentFromShard(connectionId, shardId);
     await agent.stub.syncThread({ threadId });
   } catch (error) {
-    console.error(`[ZeroAgent] Thread not found for threadId: ${threadId}`, error);
+    console.error(`[SkippyAgent] Thread not found for threadId: ${threadId}`, error);
   }
 };
 
@@ -402,7 +402,7 @@ export const getThreadsFromDB = async (
   },
 ): Promise<IGetThreadsResponse> => {
   // Fire and forget - don't block the thread query on state updates
-  //   const agent = await getZeroSocketAgent(connectionId);
+  //   const agent = await getSkippySocketAgent(connectionId);
   //   await agent.invalidateDoStateCache();
   void sendDoState(connectionId);
 
@@ -410,7 +410,7 @@ export const getThreadsFromDB = async (
 
   if (maxResults === defaultPageSize && !params.pageToken && !params.q) {
     return Effect.promise(async () => {
-      const agent = await getZeroAgent(connectionId);
+      const agent = await getSkippyAgent(connectionId);
       return await agent.stub.getThreadsFromDB({
         ...params,
         maxResults: maxResults,
@@ -500,7 +500,7 @@ const getCounts = async (connectionId: string): Promise<CountResult[]> => {
  */
 export const sendDoState = async (connectionId: string) => {
   try {
-    const agent = await getZeroSocketAgent(connectionId);
+    const agent = await getSkippySocketAgent(connectionId);
 
     const cached = await agent.getCachedDoState();
     if (cached) {
@@ -538,7 +538,7 @@ export const sendDoState = async (connectionId: string) => {
   }
 };
 
-export const getZeroSocketAgent = async (connectionId: string) => {
+export const getSkippySocketAgent = async (connectionId: string) => {
   const stub = env.ZERO_AGENT.get(env.ZERO_AGENT.idFromName(connectionId));
   return stub;
 };
@@ -548,7 +548,7 @@ export const getActiveConnection = async () => {
   const { sessionUser, auth } = c.var;
   if (!sessionUser) throw new Error('Session Not Found');
 
-  const db = await getZeroDB(sessionUser.id);
+  const db = await getSkippyDB(sessionUser.id);
   const userData = await db.findUser();
 
   if (userData?.defaultConnectionId) {

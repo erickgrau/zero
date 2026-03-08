@@ -1,5 +1,5 @@
 /*
- * Licensed to Zero Email Inc. under one or more contributor license agreements.
+ * Licensed to Skippy Email Inc. under one or more contributor license agreements.
  * You may not use this file except in compliance with the Apache License, Version 2.0 (the "License").
  * You may obtain a copy of the License at
  *
@@ -11,14 +11,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Reuse or distribution of this file requires a license from Zero Email Inc.
+ * Reuse or distribution of this file requires a license from Skippy Email Inc.
  */
 import {
   SummarizeMessage,
   ReSummarizeThread,
   SummarizeThread,
 } from '../lib/brain.fallback.prompts';
-import { getZeroAgent, getZeroSocketAgent, modifyThreadLabelsInDB } from '../lib/server-utils';
+import { getSkippyAgent, getSkippySocketAgent, modifyThreadLabelsInDB } from '../lib/server-utils';
 import { EPrompts, defaultLabels, type ParsedMessage } from '../types';
 import { analyzeEmailIntent, generateAutomaticDraft } from './index';
 import { getPrompt, getEmbeddingVector } from '../pipelines.effect';
@@ -140,14 +140,14 @@ export const workflowFunctions: Record<string, WorkflowFunction> = {
       fromEmail: context.foundConnection.email,
     };
 
-    const { stub: agent } = await getZeroAgent(context.connectionId);
+    const { stub: agent } = await getSkippyAgent(context.connectionId);
     const createdDraft = await agent.createDraft(draftData);
     console.log('[WORKFLOW_FUNCTIONS] Created automatic draft:', {
       threadId: context.threadId,
       draftId: createdDraft?.id,
     });
 
-    const socketAgent = await getZeroSocketAgent(context.connectionId);
+    const socketAgent = await getSkippySocketAgent(context.connectionId);
     await socketAgent.queue('_reSyncThread', { threadId: context.threadId });
 
     const result = await agent.syncThread({ threadId: context.threadId });
@@ -414,7 +414,7 @@ export const workflowFunctions: Record<string, WorkflowFunction> = {
   getUserLabels: async (context) => {
     try {
       console.log('[WORKFLOW_FUNCTIONS] Getting user labels for connection:', context.results);
-      const { stub: agent } = await getZeroAgent(context.connectionId);
+      const { stub: agent } = await getSkippyAgent(context.connectionId);
       const userAccountLabels = await agent.getUserLabels();
       return { userAccountLabels };
     } catch (error) {
@@ -426,7 +426,7 @@ export const workflowFunctions: Record<string, WorkflowFunction> = {
   getUserTopics: async (context) => {
     console.log('[WORKFLOW_FUNCTIONS] Getting user topics for connection:', context.connectionId);
     try {
-      const { stub: agent } = await getZeroAgent(context.connectionId);
+      const { stub: agent } = await getSkippyAgent(context.connectionId);
       const userTopics = await agent.getUserTopics();
       if (userTopics.length > 0) {
         const formattedTopics = userTopics.map((topic: any) => ({
@@ -534,7 +534,7 @@ Thread Summary: ${summaryResult.summary}`;
       suggestions: suggestions.map((s: any) => `${s.name} (${s.source})`),
     });
 
-    const { stub: agent } = await getZeroAgent(context.connectionId);
+    const { stub: agent } = await getSkippyAgent(context.connectionId);
     const finalLabelIds: string[] = [];
     const createdLabels: any[] = [];
 

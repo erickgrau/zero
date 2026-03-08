@@ -1,6 +1,6 @@
 import { client, v2 } from '@datadog/datadog-api-client';
 import type { TRPCCallLog } from '../types/logging';
-import type { ZeroEnv } from '../env';
+import type { SkippyEnv } from '../env';
 
 export class DatadogService {
     private apiInstance: v2.LogsApi;
@@ -8,7 +8,7 @@ export class DatadogService {
     private appKey: string;
     private site: string;
 
-    constructor(env?: ZeroEnv) {
+    constructor(env?: SkippyEnv) {
         // Runtime validation for required Datadog credentials
         if (!env?.DD_API_KEY || env.DD_API_KEY.trim() === '') {
             throw new Error('DD_API_KEY environment variable is required and cannot be empty for Datadog service');

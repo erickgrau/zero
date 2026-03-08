@@ -93,18 +93,18 @@ const sections = [
     content: (
       <div className="space-y-4">
         <p>
-          At Zero, we believe that privacy is a fundamental right. Our open-source email solution is
+          At Skippy, we believe that privacy is a fundamental right. Our open-source email solution is
           built with privacy at its core, and we&apos;re committed to being transparent about how we
           handle your data.
         </p>
         <p className="font-semibold">
-          Important: Zero is a client-only email application. We DO NOT store your emails on our
+          Important: Skippy is a client-only email application. We DO NOT store your emails on our
           servers. All email data is processed directly between your browser and Gmail.
         </p>
         <p>Our verified privacy commitments:</p>
         <ul className="ml-4 list-disc space-y-2">
           <li>
-            Zero Email Storage: We never store your emails - they remain in your Gmail account
+            Skippy Email Storage: We never store your emails - they remain in your Gmail account
           </li>
           <li>Client-Side Processing: All email processing happens in your browser</li>
           <li>Open Source: Our entire codebase is public and can be audited</li>
@@ -118,7 +118,7 @@ const sections = [
     title: 'Google Account Integration',
     content: (
       <>
-        <p className="mb-4">When you use Zero with your Google Account:</p>
+        <p className="mb-4">When you use Skippy with your Google Account:</p>
         <ul className="ml-4 list-disc space-y-2">
           <li>We request access to your Gmail data only after receiving your explicit consent</li>
           <li>We access only the necessary Gmail API scopes required for email functionality</li>
@@ -161,7 +161,7 @@ const sections = [
         <div>
           <h3 className="mb-3 text-lg font-medium">Self-Hosted Instances</h3>
           <ul className="ml-4 list-disc space-y-2">
-            <li>When you self-host Zero, your email data remains entirely under your control</li>
+            <li>When you self-host Skippy, your email data remains entirely under your control</li>
             <li>No data is sent to our servers or third parties without your explicit consent</li>
             <li>You maintain complete ownership and responsibility for your data</li>
             <li>We provide detailed documentation on secure self-hosting practices</li>
@@ -239,7 +239,7 @@ const sections = [
                 <li>Basic profile information</li>
               </ul>
             </li>
-            <li>This data is used exclusively for providing email functionality within Zero</li>
+            <li>This data is used exclusively for providing email functionality within Skippy</li>
             <li>No Google user data is used for advertising, marketing, or profiling purposes</li>
             <li>We maintain detailed audit logs of all data access for security and compliance</li>
             <li>Access to user data is strictly limited to essential personnel</li>
@@ -342,7 +342,7 @@ const sections = [
           <h3 className="mb-3 text-lg font-medium">Free Plan and Trial Period</h3>
           <ul className="ml-4 list-disc space-y-2">
             <li>
-              Zero offers a free plan with basic features that requires no payment information
+              Skippy offers a free plan with basic features that requires no payment information
             </li>
             <li>For premium features, we offer a 7-day free trial period</li>
             <li>A valid credit card is required to start the premium free trial</li>
@@ -363,7 +363,7 @@ const sections = [
             <li>Subscription fees are billed in advance on a monthly or annual basis</li>
             <li>Current pricing information is available on our pricing page</li>
             <li>All payments are processed securely through our trusted payment partners</li>
-            <li>Subscription charges will appear on your billing statement as "Zero Email"</li>
+            <li>Subscription charges will appear on your billing statement as "Skippy Email"</li>
             <li>
               We accept major credit cards and other payment methods as available in your region
             </li>
@@ -428,7 +428,7 @@ const sections = [
             founders@0.email
           </a>
           <a
-            href="https://github.com/Mail-0/Zero"
+            href="https://github.com/Mail-0/Skippy"
             className="inline-flex items-center text-blue-600 hover:text-blue-800"
           >
             <Github className="mr-2 h-4 w-4" />

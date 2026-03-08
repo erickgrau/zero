@@ -1,6 +1,6 @@
 import { createRateLimiterMiddleware, privateProcedure, publicProcedure, router } from '../trpc';
 import { defaultUserSettings, userSettingsSchema, type UserSettings } from '../../lib/schemas';
-import { getZeroDB } from '../../lib/server-utils';
+import { getSkippyDB } from '../../lib/server-utils';
 import { Ratelimit } from '@upstash/ratelimit';
 
 export const settingsRouter = router({
@@ -15,7 +15,7 @@ export const settingsRouter = router({
       if (!ctx.sessionUser) return { settings: defaultUserSettings };
 
       const { sessionUser } = ctx;
-      const db = await getZeroDB(sessionUser.id);
+      const db = await getSkippyDB(sessionUser.id);
       const result: any = await db.findUserSettings();
 
       // Returning null here when there are no settings so we can use the default settings with timezone from the browser
@@ -33,7 +33,7 @@ export const settingsRouter = router({
 
   save: privateProcedure.input(userSettingsSchema.partial()).mutation(async ({ ctx, input }) => {
     const { sessionUser } = ctx;
-    const db = await getZeroDB(sessionUser.id);
+    const db = await getSkippyDB(sessionUser.id);
     const existingSettings: any = await db.findUserSettings();
 
     if (existingSettings) {

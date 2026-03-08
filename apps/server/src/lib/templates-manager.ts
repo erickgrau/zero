@@ -1,4 +1,4 @@
-import { getZeroDB } from './server-utils';
+import { getSkippyDB } from './server-utils';
 import { randomUUID } from 'node:crypto';
 import { TRPCError } from '@trpc/server';
 
@@ -17,7 +17,7 @@ type EmailTemplate = {
 
 export class TemplatesManager {
   async listTemplates(userId: string) {
-    const db = await getZeroDB(userId);
+    const db = await getSkippyDB(userId);
     return await db.listEmailTemplates();
   }
 
@@ -54,7 +54,7 @@ export class TemplatesManager {
       });
     }
 
-    const db = await getZeroDB(userId);
+    const db = await getSkippyDB(userId);
     
     const existingTemplates = (await db.listEmailTemplates()) as EmailTemplate[];
     const nameExists = existingTemplates.some((template: EmailTemplate) => 
@@ -82,7 +82,7 @@ export class TemplatesManager {
   }
 
   async deleteTemplate(userId: string, templateId: string) {
-    const db = await getZeroDB(userId);
+    const db = await getSkippyDB(userId);
     await db.deleteEmailTemplate(templateId);
     return true;
   }

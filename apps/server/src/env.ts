@@ -1,15 +1,15 @@
-import type { ThinkingMCP, ThreadSyncWorker, WorkflowRunner, ZeroDB, ZeroMCP } from './main';
-import type { ShardRegistry, ZeroAgent, ZeroDriver } from './routes/agent';
+import type { ThinkingMCP, ThreadSyncWorker, WorkflowRunner, SkippyDB, SkippyMCP } from './main';
+import type { ShardRegistry, SkippyAgent, SkippyDriver } from './routes/agent';
 
 import { env as _env } from 'cloudflare:workers';
 import type { QueryableHandler } from 'dormroom';
 
-export type ZeroEnv = {
-  ZERO_DRIVER: DurableObjectNamespace<ZeroDriver & QueryableHandler>;
+export type SkippyEnv = {
+  ZERO_DRIVER: DurableObjectNamespace<SkippyDriver & QueryableHandler>;
   SHARD_REGISTRY: DurableObjectNamespace<ShardRegistry & QueryableHandler>;
-  ZERO_DB: DurableObjectNamespace<ZeroDB>;
-  ZERO_AGENT: DurableObjectNamespace<ZeroAgent>;
-  ZERO_MCP: DurableObjectNamespace<ZeroMCP & QueryableHandler>;
+  ZERO_DB: DurableObjectNamespace<SkippyDB>;
+  ZERO_AGENT: DurableObjectNamespace<SkippyAgent>;
+  ZERO_MCP: DurableObjectNamespace<SkippyMCP & QueryableHandler>;
   THINKING_MCP: DurableObjectNamespace<ThinkingMCP & QueryableHandler>;
   WORKFLOW_RUNNER: DurableObjectNamespace<WorkflowRunner & QueryableHandler>;
 
@@ -104,5 +104,5 @@ export type ZeroEnv = {
   DD_SITE: string;
 };
 
-const env = _env as ZeroEnv;
+const env = _env as SkippyEnv;
 export { env };

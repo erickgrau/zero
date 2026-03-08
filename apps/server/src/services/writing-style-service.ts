@@ -1,10 +1,10 @@
 import { mapToObj, pipe, entries, sortBy, take, fromEntries } from 'remeda';
 
-import { writingStyleMatrix } from '../db/schema';
+import { writingStyleMatrix, connection } from '../db/schema';
 
 
 import { env } from '../env';
-import { google } from '@ai-sdk/google';
+import { getMiniModel } from '../lib/llm-provider';
 import { jsonrepair } from 'jsonrepair';
 import { generateObject } from 'ai';
 import { eq } from 'drizzle-orm';
@@ -178,7 +178,13 @@ export const getWritingStyleMatrixForConnectionId = async ({
       return null;
     }
 
-    const newMatrix = await extractStyleMatrix(backupContent);
+    const connRec = await db.query.connection.findFirst({
+      where: eq(connection.id, connectionId),
+    });
+
+    if (!connRec?.userId) return null;
+
+    const newMatrix = await extractStyleMatrix(backupContent, connRec.userId);
 
     return {
       connectionId,
@@ -191,7 +197,14 @@ export const getWritingStyleMatrixForConnectionId = async ({
 };
 
 export const updateWritingStyleMatrix = async (connectionId: string, emailBody: string) => {
-  const emailStyleMatrix = await extractStyleMatrix(emailBody);
+  const { db } = createDb((env as any).DATABASE_URL);
+  const connRec = await db.query.connection.findFirst({
+    where: eq(connection.id, connectionId),
+  });
+
+  if (!connRec?.userId) return;
+
+  const emailStyleMatrix = await extractStyleMatrix(emailBody, connRec.userId);
 
   await pRetry(
     async () => {
@@ -333,13 +346,13 @@ export type WritingStyleMatrix = Record<(typeof MEAN_METRIC_KEYS)[number], Welfo
   Record<(typeof SUM_METRIC_KEYS)[number], number> &
   Record<(typeof TOP_COUNTS_KEYS)[number], Record<string, number>>;
 
-const extractStyleMatrix = async (emailBody: string) => {
+const extractStyleMatrix = async (emailBody: string, userId: string) => {
   if (!emailBody.trim()) {
     throw new Error('Invalid body provided.');
   }
 
   const { object: result } = await generateObject({
-    model: google('gemini-2.0-flash'),
+    model: await getMiniModel({ userId }),
     schema,
     temperature: 0,
     maxTokens: 600,
@@ -372,7 +385,7 @@ const extractStyleMatrix = async (emailBody: string) => {
     signOff: signOff ?? null,
     greetingTotal: greeting ? 1 : 0,
     signOffTotal: signOff ? 1 : 0,
-  };
+  } as unknown as EmailMatrix;
 };
 
 const StyleMatrixExtractorPrompt = () => `

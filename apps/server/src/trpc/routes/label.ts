@@ -1,5 +1,5 @@
 import { activeDriverProcedure, createRateLimiterMiddleware, router } from '../trpc';
-import { getZeroAgent } from '../../lib/server-utils';
+import { getSkippyAgent } from '../../lib/server-utils';
 import { Ratelimit } from '@upstash/ratelimit';
 import { z } from 'zod';
 
@@ -28,7 +28,7 @@ export const labelsRouter = router({
     )
     .query(async ({ ctx }) => {
       const { activeConnection } = ctx;
-      const { stub: agent } = await getZeroAgent(activeConnection.id);
+      const { stub: agent } = await getSkippyAgent(activeConnection.id);
       return await agent.getUserLabels();
     }),
   create: activeDriverProcedure
@@ -54,7 +54,7 @@ export const labelsRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const { activeConnection } = ctx;
-      const { stub: agent } = await getZeroAgent(activeConnection.id);
+      const { stub: agent } = await getSkippyAgent(activeConnection.id);
       const label = {
         ...input,
         type: 'user',
@@ -83,7 +83,7 @@ export const labelsRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const { activeConnection } = ctx;
-      const { stub: agent } = await getZeroAgent(activeConnection.id);
+      const { stub: agent } = await getSkippyAgent(activeConnection.id);
       const { id, ...label } = input;
       return await agent.updateLabel(id, label);
     }),
@@ -97,7 +97,7 @@ export const labelsRouter = router({
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const { activeConnection } = ctx;
-      const { stub: agent } = await getZeroAgent(activeConnection.id);
+      const { stub: agent } = await getSkippyAgent(activeConnection.id);
       return await agent.deleteLabel(input.id);
     }),
 });

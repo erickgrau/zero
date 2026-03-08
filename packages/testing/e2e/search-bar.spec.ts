@@ -9,7 +9,7 @@ test.describe('Search Bar Functionality', () => {
     await page.waitForTimeout(2000)
 
     try {
-      const welcomeModal = page.getByText('Welcome to Zero Email!')
+      const welcomeModal = page.getByText('Welcome to Skippy Email!')
       if (await welcomeModal.isVisible({ timeout: 2000 })) {
         console.log('Onboarding modal detected, clicking outside to dismiss')
         await page.locator('body').click({ position: { x: 100, y: 100 } })

@@ -4,35 +4,35 @@ import { Resend } from 'resend';
 
 const RandomEmails = (companyName: string) => [
   {
-    subject: `${companyName} <> Zero - Investment Opportunity`,
+    subject: `${companyName} <> Skippy - Investment Opportunity`,
     body: `Hi there,\n\nI'm reaching out from ${companyName} regarding a potential investment opportunity. We believe there could be great synergy between our companies.\n\nWould you be open to a brief conversation?\n\nBest regards`,
   },
   {
-    subject: `${companyName} <> Zero - Reach Out / Investment`,
+    subject: `${companyName} <> Skippy - Reach Out / Investment`,
     body: `Hello,\n\nI represent ${companyName} and we're actively looking to invest in innovative companies like yours. We'd love to learn more about your vision.\n\nLet me know if you'd be interested in connecting.\n\nRegards`,
   },
   {
-    subject: `${companyName} <> Zero - Series A`,
+    subject: `${companyName} <> Skippy - Series A`,
     body: `Greetings,\n\n${companyName} is currently raising our Series A round and we're looking for strategic partners. We believe your expertise could be valuable.\n\nWould you be interested in learning more?\n\nBest`,
   },
   {
-    subject: `${companyName} <> Zero - Partnership Proposal`,
+    subject: `${companyName} <> Skippy - Partnership Proposal`,
     body: `Hi,\n\n${companyName} is exploring strategic partnerships to accelerate our growth. We think there could be interesting opportunities for collaboration.\n\nWould you be open to discussing this further?\n\nRegards`,
   },
   {
-    subject: `${companyName} <> Zero - Business Development`,
+    subject: `${companyName} <> Skippy - Business Development`,
     body: `Hello there,\n\nI'm with ${companyName}'s business development team. We're looking to expand our network and explore potential synergies.\n\nWould you be interested in a brief conversation?\n\nBest regards`,
   },
   {
-    subject: `${companyName} <> Zero - Strategic Investment`,
+    subject: `${companyName} <> Skippy - Strategic Investment`,
     body: `Hi,\n\n${companyName} is seeking strategic investors who can bring more than just capital to the table. We believe your experience could be valuable.\n\nLet me know if you'd like to learn more.\n\nRegards`,
   },
   {
-    subject: `${companyName} <> Zero - Growth Opportunity`,
+    subject: `${companyName} <> Skippy - Growth Opportunity`,
     body: `Greetings,\n\n${companyName} is at an exciting growth stage and we're looking for partners who can help us scale. We'd love to share our vision with you.\n\nWould you be open to a discussion?\n\nBest`,
   },
   {
-    subject: `${companyName} <> Zero - Strategic Partnership`,
+    subject: `${companyName} <> Skippy - Strategic Partnership`,
     body: `Hello,\n\n${companyName} is exploring strategic partnerships to enhance our market position. We believe there could be mutual benefits in working together.\n\nWould you be interested in learning more?\n\nRegards`,
   },
   {

@@ -1,5 +1,5 @@
 /*
- * Licensed to Zero Email Inc. under one or more contributor license agreements.
+ * Licensed to Skippy Email Inc. under one or more contributor license agreements.
  * You may not use this file except in compliance with the Apache License, Version 2.0 (the "License").
  * You may obtain a copy of the License at
  *
@@ -11,13 +11,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Reuse or distribution of this file requires a license from Zero Email Inc.
+ * Reuse or distribution of this file requires a license from Skippy Email Inc.
  */
 import { WorkflowEntrypoint, WorkflowStep } from 'cloudflare:workers';
 import { connectionToDriver } from '../lib/server-utils';
 import type { WorkflowEvent } from 'cloudflare:workers';
 import { connection } from '../db/schema';
-import type { ZeroEnv } from '../env';
+import type { SkippyEnv } from '../env';
 import { eq } from 'drizzle-orm';
 import { createDb } from '../db';
 
@@ -44,7 +44,7 @@ export interface SyncThreadsCoordinatorResult {
 }
 
 export class SyncThreadsCoordinatorWorkflow extends WorkflowEntrypoint<
-  ZeroEnv,
+  SkippyEnv,
   SyncThreadsCoordinatorParams
 > {
   async run(

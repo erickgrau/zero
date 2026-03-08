@@ -466,8 +466,8 @@
         "customPromptPlaceholder": "Zadejte vlastní pokyn pro AI...",
         "customPromptDescription": "Přizpůsobte, jak AI píše vaše e-mailové odpovědi. Toto bude přidáno k základnímu pokynu.",
         "noResultsFound": "Nebyly nalezeny žádné výsledky",
-        "zeroSignature": "Zero podpis",
-        "zeroSignatureDescription": "Přidat Zero podpis k vašim emailům.",
+        "zeroSignature": "Skippy podpis",
+        "zeroSignatureDescription": "Přidat Skippy podpis k vašim emailům.",
         "undoSendEnabled": "Odvolat odeslání",
         "undoSendEnabledDescription": "Umožnit zrušení e-mailů do 30 sekund po odeslání.",
         "defaultEmailAlias": "Výchozí e-mailový alias",
@@ -480,7 +480,7 @@
       },
       "connections": {
         "title": "Propojení emailu",
-        "description": "Propojit emailový účet k Zero.",
+        "description": "Propojit emailový účet k Skippy.",
         "disconnectTitle": "Odpojit emailový účet",
         "disconnectDescription": "Opravdu chcete odpojit tento email?",
         "cancel": "Zrušit",
@@ -668,6 +668,6 @@
   "errorMessages": {
     "required_scopes_missing": "Chybí nám oprávnění potřebná k vytvoření plnohodnotného zážitku. Přihlaste se prosím znovu a povolte požadovaný přístup.",
     "early_access_required": "Pro přihlášení je vyžadován předběžný přístup",
-    "unauthorized": "Zero nemohl načíst vaše data od poskytovatele třetí strany. Zkuste to prosím znovu."
+    "unauthorized": "Skippy nemohl načíst vaše data od poskytovatele třetí strany. Zkuste to prosím znovu."
   }
 }

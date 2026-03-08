@@ -1,5 +1,5 @@
 /*
- * Licensed to Zero Email Inc. under one or more contributor license agreements.
+ * Licensed to Skippy Email Inc. under one or more contributor license agreements.
  * You may not use this file except in compliance with the Apache License, Version 2.0 (the "License").
  * You may obtain a copy of the License at
  *
@@ -11,11 +11,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Reuse or distribution of this file requires a license from Zero Email Inc.
+ * Reuse or distribution of this file requires a license from Skippy Email Inc.
  */
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { getThread, getZeroAgent } from '../../lib/server-utils';
+import { getThread, getSkippyAgent } from '../../lib/server-utils';
 import { composeEmail } from '../../trpc/routes/ai/compose';
 import { getCurrentDateContext } from '../../lib/prompts';
 import { connection } from '../../db/schema';
@@ -26,11 +26,11 @@ import { McpAgent } from 'agents/mcp';
 import { createDb } from '../../db';
 import z from 'zod';
 
-export class ZeroMCP extends McpAgent<typeof env, Record<string, unknown>, { userId: string }> {
+export class SkippyMCP extends McpAgent<typeof env, Record<string, unknown>, { userId: string }> {
   server = new McpServer({
     name: 'zero-mcp',
     version: '1.0.0',
-    description: 'Zero MCP',
+    description: 'Skippy MCP',
   });
 
   activeConnectionId: string | undefined;
@@ -186,7 +186,7 @@ export class ZeroMCP extends McpAgent<typeof env, Record<string, unknown>, { use
       },
     );
 
-    const { stub: agent } = await getZeroAgent(_connection.id);
+    const { stub: agent } = await getSkippyAgent(_connection.id);
 
     this.server.registerTool(
       'composeEmail',
