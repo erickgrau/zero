@@ -4,12 +4,15 @@
 
 Zero is an open-source AI-powered email client that serves as a Gmail/Outlook alternative with self-hosting capabilities. It's built as a pnpm monorepo using modern TypeScript with the following architecture:
 
-- **Frontend** (`apps/mail/`): React Router v7 + Vite, deployed on Cloudflare Workers
-- **Backend** (`apps/server/`): Hono framework on Cloudflare Workers with Durable Objects
-- **Database**: PostgreSQL (via Drizzle ORM) for persistent data + SQLite (in Durable Objects) for per-user email thread caching
-- **Real-time**: Cloudflare Durable Objects (`ZeroAgent`) with WebSocket connections
+- **Frontend** (`apps/mail/`): React Router v7 + Vite, deployed on **Vercel**
+- **Backend** (`apps/server/`): Hono framework on **Vercel Serverless Functions** (with **Railway** for background workers)
+- **Database**: **Supabase** (PostgreSQL via Drizzle ORM) — single database with connection pooling
+- **Real-time**: **Supabase Realtime** (WebSocket subscriptions for live updates)
+- **Storage**: **Supabase Storage** (attachments, uploads)
+- **Vector Search**: **Voyage AI** embeddings + **Supabase pgvector**
 - **AI**: Multi-provider AI (OpenAI, Anthropic, Google, Groq, Perplexity) via Vercel AI SDK
-- **Auth**: Better Auth with Google/Microsoft OAuth
+- **Auth**: Better Auth with Google/Microsoft OAuth + Supabase Auth
+- **Secrets**: User-managed via Settings UI, encrypted in Supabase; platform secrets in Vercel env vars
 
 ---
 
@@ -46,6 +49,102 @@ Zero is an open-source AI-powered email client that serves as a Gmail/Outlook al
 | **Hooks** | `hooks/` | 30+ React hooks for threads, labels, drafts, settings, connections, etc. |
 | **tRPC Client** | `lib/trpc.ts` | Type-safe API client connecting to backend |
 | **i18n** | `messages/` | Internationalization with Paraglide |
+
+---
+
+## Hosting & Infrastructure
+
+### Deployment Target: Vercel
+
+The application will be hosted on **Vercel** instead of Cloudflare Workers. This requires architectural changes since the current codebase is deeply tied to Cloudflare primitives.
+
+| Service | Provider | Purpose |
+|---|---|---|
+| **Frontend Hosting** | Vercel | Next.js/React Router SSR, edge functions, static assets |
+| **Backend API** | Vercel Serverless Functions (or Railway) | Hono API server, tRPC endpoints |
+| **Database** | Supabase (PostgreSQL) | Primary data store via Drizzle ORM |
+| **Auth** | Supabase Auth + Better Auth | Google/Microsoft OAuth, session management |
+| **Cache/Real-time** | Supabase Realtime | WebSocket subscriptions, presence |
+| **File Storage** | Supabase Storage | Email attachments, user uploads (replaces Cloudflare R2) |
+| **Background Jobs** | Railway | Long-running sync workers, email processing pipelines |
+| **Vector Search** | Voyage AI | Email embeddings for AI-powered search/RAG (replaces Cloudflare Vectorize) |
+| **AI Providers** | OpenAI, Anthropic, Google, Groq, Perplexity | Multi-provider AI via Vercel AI SDK (unchanged) |
+
+### Migration from Cloudflare Workers
+
+The following Cloudflare-specific components need replacement:
+
+| Cloudflare Component | Replacement | Notes |
+|---|---|---|
+| **Durable Objects** (ZeroAgent, ZeroDriver, etc.) | Vercel serverless + Supabase Realtime + Railway workers | Split stateful logic into DB-backed state + pub/sub |
+| **KV Namespaces** | Supabase tables or Redis on Railway | Gmail history, subscriptions, pending/scheduled emails |
+| **R2 Storage** | Supabase Storage | S3-compatible, same API patterns |
+| **Queues** | Railway workers + Supabase pg_notify or BullMQ on Railway | Thread processing, email sending |
+| **Vectorize** | Voyage AI embeddings + Supabase pgvector | Vector search for RAG/semantic email search |
+| **Hyperdrive** | Direct Supabase connection pooling (PgBouncer built-in) | Connection pooling handled by Supabase |
+| **Workflows** | Railway persistent workers or Vercel Cron + Supabase | Background sync coordination |
+| **Wrangler config** | `vercel.json` | Build & deployment configuration |
+
+### Secrets & API Key Management
+
+All secrets, API keys, and credentials will be:
+
+1. **Managed via the application UI** — Users configure their own provider credentials (OAuth tokens, AI API keys, etc.) through the Settings interface
+2. **Stored in Supabase** — Encrypted at rest in dedicated tables within the Supabase PostgreSQL database
+3. **Never committed to code** — No `.env` files in the repo beyond `.env.example` with placeholder values
+
+**Database schema for secrets** (new table in `db/schema.ts`):
+
+```typescript
+export const userSecrets = pgTable('user_secret', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  provider: text('provider').notNull(),     // e.g., 'openai', 'anthropic', 'google_oauth', 'voyage'
+  key: text('key').notNull(),               // e.g., 'api_key', 'client_id', 'refresh_token'
+  encryptedValue: text('encrypted_value').notNull(),  // encrypted via Supabase vault or app-level encryption
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+```
+
+**Platform-level secrets** (Vercel dashboard):
+- `DATABASE_URL` — Supabase connection string
+- `SUPABASE_SERVICE_ROLE_KEY` — For server-side Supabase access
+- `ENCRYPTION_KEY` — Master key for encrypting user secrets at rest
+- `BETTER_AUTH_SECRET` — Auth session signing
+
+**User-managed secrets** (via Settings UI → stored in Supabase):
+- AI provider API keys (OpenAI, Anthropic, Google, Groq, Perplexity, Voyage AI)
+- Email provider OAuth tokens (Google, Microsoft)
+- Optional service keys (Twilio, Resend, ElevenLabs)
+
+### Vercel Project Configuration
+
+```json
+// vercel.json
+{
+  "buildCommand": "pnpm turbo build",
+  "outputDirectory": "apps/mail/.output",
+  "framework": null,
+  "functions": {
+    "apps/server/api/**": {
+      "memory": 1024,
+      "maxDuration": 30
+    }
+  },
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "/apps/server/api/:path*" }
+  ]
+}
+```
+
+### Railway Services
+
+Railway will host long-running background workers that don't fit Vercel's serverless model:
+
+1. **Sync Worker** — Continuous email sync polling (replaces Cloudflare Workflows)
+2. **Queue Processor** — Email send queue, thread processing (replaces Cloudflare Queues)
+3. **Cron Jobs** — Scheduled tasks (token refresh, cleanup)
 
 ---
 
@@ -138,17 +237,23 @@ Zero is an open-source AI-powered email client that serves as a Gmail/Outlook al
 - Add user preference learning for priority inbox sorting
 - Implement scheduled email intelligence (best time to send)
 
-### 8. Self-Hosting Experience (Medium Priority)
+### 8. Vercel + Supabase Deployment (High Priority)
 
-**Current State**: Docker Compose for PostgreSQL. Cloudflare Workers for deployment. Documentation exists but is focused on cloud deployment.
+**Current State**: Architecture is deeply tied to Cloudflare Workers (Durable Objects, KV, R2, Queues, Workflows, Vectorize). Needs migration to Vercel + Supabase + Railway stack.
 
 **Plan**:
-- Create a comprehensive `docker-compose.prod.yaml` that includes all services (already exists, needs review)
-- Add non-Cloudflare deployment options (Node.js standalone, Docker container)
-- Create migration scripts for switching between deployment targets
-- Document environment variable configuration more completely
-- Add health check endpoints for monitoring
-- Create Helm charts for Kubernetes deployment
+- Replace Cloudflare Worker entry points with Vercel serverless functions
+- Migrate Durable Object state to Supabase tables + Realtime subscriptions
+- Replace R2 with Supabase Storage for attachments
+- Replace KV namespaces with Supabase tables
+- Replace Cloudflare Queues with Railway-hosted BullMQ workers
+- Replace Cloudflare Vectorize with Voyage AI embeddings + Supabase pgvector
+- Set up Railway services for background sync workers
+- Build Settings UI for user-managed API keys and secrets
+- Implement encrypted secrets storage in Supabase
+- Create `vercel.json` configuration and deployment pipeline
+- Update CI/CD to deploy to Vercel (replace Wrangler deploys)
+- Add health check endpoints and monitoring
 
 ### 9. Offline Support & PWA (Medium Priority)
 
@@ -201,24 +306,31 @@ Zero is an open-source AI-powered email client that serves as a Gmail/Outlook al
 
 | Phase | Focus | Items | Rationale |
 |---|---|---|---|
+| **Phase 0** | Infrastructure Migration | Vercel + Supabase Deployment (#8), Secrets Management | Must run on target infrastructure before any other work |
 | **Phase 1** | Stability & Security | Testing (#1), Error Handling (#3), Security (#5) | Foundation for all other work |
 | **Phase 2** | Core Functionality | Email Sync (#4), Microsoft Integration (#2) | Complete the core email experience |
 | **Phase 3** | User Experience | Performance (#6), AI Enhancement (#7), Accessibility (#10) | Polish the user-facing experience |
-| **Phase 4** | Platform Growth | Self-Hosting (#8), Offline/PWA (#9), DX (#11), Voice (#12) | Expand the platform's reach |
+| **Phase 4** | Platform Growth | Offline/PWA (#9), DX (#11), Voice (#12) | Expand the platform's reach |
 
 ---
 
 ## Key Technical Decisions to Consider
 
-1. **Cloudflare Workers Dependency**: The current architecture is deeply tied to Cloudflare (Durable Objects, R2, KV, Queues, Workflows, Vectorize, Hyperdrive). Self-hosting would require abstraction layers or alternative implementations.
+1. **Cloudflare → Vercel Migration**: The current architecture is deeply tied to Cloudflare (Durable Objects, R2, KV, Queues, Workflows, Vectorize, Hyperdrive). Migrating to Vercel + Supabase + Railway requires replacing each primitive with an equivalent. This is the highest-risk, highest-effort item and should be tackled incrementally.
 
-2. **Database Strategy**: The dual-database approach (PostgreSQL for persistent data, SQLite in Durable Objects for per-user cache) is clever for performance but adds complexity. Consider whether the tradeoff is worth it as the codebase grows.
+2. **Database Strategy**: Moving from dual-database (PostgreSQL + SQLite in Durable Objects) to Supabase PostgreSQL only. The per-user SQLite cache in Durable Objects will be replaced by Supabase tables with proper indexing. This simplifies the architecture at the cost of some read latency — mitigated by Supabase's built-in connection pooling and edge caching.
 
-3. **AI Provider Strategy**: Supporting 4+ AI providers gives flexibility but adds maintenance burden. Consider standardizing on fewer providers or making the provider selection more dynamic.
+3. **Real-time Architecture**: Replace Durable Object WebSocket connections with Supabase Realtime (Postgres changes → WebSocket broadcast). This simplifies the stack significantly and provides built-in presence/broadcast features.
 
-4. **Real-time Architecture**: The WebSocket connection via Durable Objects is effective but complex. Consider whether Server-Sent Events could simplify some use cases.
+4. **Vector Search / RAG**: Use Voyage AI for embeddings generation and Supabase pgvector extension for storage and similarity search. This replaces Cloudflare Vectorize and gives us control over embedding models.
 
-5. **State Management**: The mix of React Query (server state), Jotai (client state), and URL search params (nuqs) works but could benefit from clearer conventions about when to use each.
+5. **Background Workers**: Railway handles long-running processes (email sync, queue processing) that don't fit Vercel's 30s serverless limit. Communication via Supabase pg_notify or a Redis-backed queue on Railway.
+
+6. **Secrets Management**: All user-configurable secrets flow through the Settings UI → encrypted → Supabase. Platform secrets stay in Vercel environment variables. This means users can self-service their AI provider keys without redeploying.
+
+7. **AI Provider Strategy**: Supporting 4+ AI providers gives flexibility but adds maintenance burden. Consider standardizing on fewer providers or making the provider selection more dynamic.
+
+8. **State Management**: The mix of React Query (server state), Jotai (client state), and URL search params (nuqs) works but could benefit from clearer conventions about when to use each.
 
 ---
 
