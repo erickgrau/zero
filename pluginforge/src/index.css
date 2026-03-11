@@ -1,0 +1,102 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    @apply bg-surface-950 text-surface-100 antialiased;
+    font-family: "Inter", system-ui, sans-serif;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-surface-900;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-surface-700 rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-surface-600;
+  }
+}
+
+@layer components {
+  .knob-container {
+    @apply relative w-20 h-20 flex items-center justify-center;
+  }
+
+  .knob-ring {
+    @apply absolute inset-0 rounded-full;
+    background: conic-gradient(
+      from 220deg,
+      var(--knob-color, #5c7cfa) 0%,
+      var(--knob-color, #5c7cfa) var(--knob-value, 0%),
+      #343a40 var(--knob-value, 0%),
+      #343a40 68%,
+      transparent 68%
+    );
+  }
+
+  .glass-panel {
+    @apply bg-surface-900/80 backdrop-blur-xl border border-surface-700/50 rounded-2xl;
+  }
+
+  .glow-border {
+    @apply border border-brand-500/30 shadow-[0_0_15px_rgba(92,124,250,0.1)];
+  }
+
+  .plugin-card {
+    @apply glass-panel p-5 hover:border-brand-500/50 transition-all duration-300 cursor-pointer;
+  }
+
+  .plugin-card:hover {
+    @apply shadow-[0_0_30px_rgba(92,124,250,0.15)] -translate-y-1;
+  }
+
+  .btn-primary {
+    @apply px-5 py-2.5 bg-brand-600 hover:bg-brand-500 text-white font-medium rounded-xl
+           transition-all duration-200 shadow-lg shadow-brand-600/25 hover:shadow-brand-500/30
+           active:scale-[0.98];
+  }
+
+  .btn-secondary {
+    @apply px-5 py-2.5 bg-surface-800 hover:bg-surface-700 text-surface-200 font-medium rounded-xl
+           border border-surface-600/50 transition-all duration-200
+           active:scale-[0.98];
+  }
+
+  .btn-ghost {
+    @apply px-4 py-2 text-surface-400 hover:text-surface-100 hover:bg-surface-800/50
+           rounded-lg transition-all duration-200;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 bg-surface-800/50 border border-surface-600/50 rounded-xl
+           text-surface-100 placeholder-surface-500 focus:outline-none focus:border-brand-500/50
+           focus:ring-2 focus:ring-brand-500/20 transition-all duration-200;
+  }
+
+  .tag {
+    @apply inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full
+           bg-brand-500/10 text-brand-300 border border-brand-500/20;
+  }
+
+  .section-title {
+    @apply text-2xl font-bold text-white mb-2;
+  }
+
+  .section-subtitle {
+    @apply text-surface-400 mb-6;
+  }
+
+  .waveform-bar {
+    @apply bg-brand-400 rounded-full transition-all duration-75;
+  }
+}
