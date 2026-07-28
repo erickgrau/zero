@@ -53,7 +53,7 @@
   },
   "dependencies": {
     "drizzle-kit": "catalog:",
-    "react-router": "^7.6.3",
+    "react-router": "^8.3.0",
     "zod": "4.1.1",
     "zod-to-json-schema": "3.24.6"
   }
