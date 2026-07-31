@@ -79,7 +79,7 @@
     "react": "catalog:",
     "remeda": "2.21.3",
     "resend": "^4.5.1",
-    "sanitize-html": "^2.16.0",
+    "sanitize-html": "^2.17.5",
     "string-strip-html": "^13.4.12",
     "superjson": "catalog:",
     "twilio": "5.7.0",
