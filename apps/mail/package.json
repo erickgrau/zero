@@ -67,7 +67,7 @@
     "date-fns": "4.1.0",
     "date-fns-tz": "^3.2.0",
     "dedent": "^1.5.3",
-    "dompurify": "^3.2.5",
+    "dompurify": "^3.4.13",
     "email-addresses": "5.0.0",
     "eslint-plugin-react-hooks": "6.0.0-rc.1",
     "idb-keyval": "^6.2.1",
